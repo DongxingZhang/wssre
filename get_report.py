@@ -4,6 +4,8 @@ import datetime
 
 import const
 import funcset
+import get_report_51pdf
+import get_report_51pdf_buy
 import get_report_sina_finance
 import get_stock_list
 
@@ -12,11 +14,11 @@ def generate_report(start_date, end_date):
     a = {}
     stock_list = get_stock_list.get_existing_stock_list()
 
-    # a1 = get_report_51pdf.generate_report(start_date, end_date, stock_list)
-    # a = funcset.merge_report_records(a, a1)
+    a1 = get_report_51pdf.generate_report(start_date, end_date, stock_list)
+    a = funcset.merge_report_records(a, a1)
 
-    # a2 = get_report_51pdf_buy.generate_report(start_date, end_date, stock_list)
-    # a = funcset.merge_report_records(a, a2)
+    a2 = get_report_51pdf_buy.generate_report(start_date, end_date, stock_list)
+    a = funcset.merge_report_records(a, a2)
 
     a3 = get_report_sina_finance.generate_report(start_date, end_date, stock_list)
     a = funcset.merge_report_records(a, a3)
