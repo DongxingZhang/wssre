@@ -59,6 +59,7 @@ def get_sina_finance(html_text, start_date, end_date, stock_list):
             temp_org = get_stock_list.check_valid_org_num(org_list, temp_org)
             if temp_org is None:
                 temp_org = td[4].text.strip()
+				funcset.log("unsupported organization: " + temp_org.strip())
             # funcset.log(temp_org)
             temp_date = td[3].text
             report_date = datetime.datetime.strptime(temp_date, "%Y-%m-%d")
