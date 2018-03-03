@@ -22,9 +22,11 @@ def get_sina_finance_page(html_text, start_date, end_date, stock_list):
     cont = pa.text.replace(u'\xa0', u' ').strip()
     creab = body.find('div', {'class': 'creab'})
     span = creab.find_all("span")
+    data = str(data).replace("\xa0", "")
+    hash_string = str(hex(int(hash(data)))).replace("0x", "").upper()
     save_path = const.WEBCACHE_DIR + os.sep + span[len(span) - 1].text.strip()[::-1][0:10][::-1].replace("-", "")
     file_path = const.WEBCACHE_CSV.replace("DATEYYMMDDHHMMDD",
-                                           datetime.datetime.now().strftime("%Y%m%d%H%M%S")).replace("DATEYYMMDD", span[
+                                           hash_string).replace("DATEYYMMDD", span[
                                                                                                                        len(
                                                                                                                            span) - 1].text.strip()[
                                                                                                                    ::-1][
@@ -33,7 +35,7 @@ def get_sina_finance_page(html_text, start_date, end_date, stock_list):
         "-", ""))
     if not os.path.exists(save_path):
         os.mkdir(save_path)
-    funcset.write_str_to_file(file_path, str(data).replace("\xa0", ""))
+    funcset.write_str_to_file(file_path, data)
     sa = get_stock_list.check_stock_exists_in_paragraph(stock_list, cont, h1.text.strip(), file_path)
     return sa
 

@@ -28,13 +28,15 @@ def get_51pdf(html_text, start_date, end_date, stock_list):
     if html_context is not None:
         td = tr[0].find_all("td")
         if len(td) == 4:
+            html_context = str(html_context).replace("\xa0", "")
+            hash_string = str(hex(int(hash(html_context)))).replace("0x", "").upper()
             save_path = const.WEBCACHE_DIR + os.sep + td[2].text.strip()
             file_path = const.WEBCACHE_CSV.replace("DATEYYMMDDHHMMDD",
-                                                   datetime.datetime.now().strftime("%Y%m%d%H%M%S")).replace(
+                                                   hash_string).replace(
                 "DATEYYMMDD", td[2].text.strip())
             if not os.path.exists(save_path):
                 os.mkdir(save_path)
-            funcset.write_str_to_file(file_path, str(html_context).replace("\xa0", ""))
+            funcset.write_str_to_file(file_path, html_context)
     for item in tr:
         td = item.find_all("td")
         if len(td) != 4:
