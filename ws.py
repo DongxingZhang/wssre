@@ -7,6 +7,20 @@ if __name__ == '__main__':
     funcset.log("Initializing data")
     get_report.get_report()
     funcset.log("Initialize data completed")
+
+    while True:
+        m = input().strip().lower().split(" ")
+        print(m)
+        if m[0] == "quit":
+            break
+        elif m[0] == "help":
+            funcset.help()
+        elif m[0] == "stock":
+            funcset.show_stock_details([])
+        elif m[0] == "ref":
+            funcset.show_reference_details([])
+        elif m[0] == "top":
+            funcset.top_reference()
     # parser = argparse.ArgumentParser(description='manual to this script')
     # parser.add_argument('--function', type=str, default=None)
     # args = parser.parse_args()

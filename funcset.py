@@ -246,3 +246,20 @@ def get_month_history_data_and_quota(stock_num, month_list, last_day):
             if month_k is None:
                 log("get_month_history_data_and_quota retry......" + str(i))
     return get_history_data_and_quota(stock_num, month_k, month_list)
+
+def help():
+    print("help")
+
+def top_reference(start_date = datetime.datetime.now(), workingdays = 3):
+    print("top_reference")
+
+def show_stock_details(stock_num_list):
+    print("show_details")
+
+def show_reference_details(stock_num_list):
+    print("show_reference")
+
+
+
+
+
