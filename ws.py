@@ -13,17 +13,28 @@ if __name__ == '__main__':
     top_rec = None
     top_rec_org = None
     top_rec_details = None
+    latest_result = None
     while True:
         print('>>', end='')
         m = input().strip().lower().split(" ")
         if m[0] == "help" or m[0] == "h":
             funcset.help()
+        elif m[0] == "savetocsv" or m[0] == "save":
+            if len(m) != 2:
+                funcset.log("rec only 1 parameter.")
+            s = m[1].strip()
+            if latest_result == None:
+                funcset.output("latest result is None")
+            else:
+                funcset.write_listlist_csv(s, "w", latest_result)
+                funcset.output("latest_result was written to " + s)
         elif m[0] == "getstock" or m[0] == "gs":
             funcset.output("==================STOCK LIST===============================")
             funcset.output("Stock list is being updated.")
-            get_stock_list.get_stock_list()
+            sl = get_stock_list.get_stock_list()
             funcset.output("Stock list update is completed.")
             funcset.output("===========================================================")
+            latest_result = sl
         elif m[0] == "top" or m[0] == "t":
             funcset.output("=====================TOP===================================")
             if len(m) != 1 and len(m) != 3:
@@ -31,8 +42,9 @@ if __name__ == '__main__':
             elif len(m) == 1:
                 [top_rec, top_rec_org, top_rec_details] = funcset.top_recommand()
             elif len(m) == 3:
-                [top_rec, top_rec_org, top_rec_details] = funcset.top_recommand(m[1], m[2])
+                [top_rec, top_rec_org, top_rec_details] = funcset.top_recommand(m[1], int(m[2]))
             funcset.output("===========================================================")
+            latest_result = top_rec
         elif m[0] == "r" or m[0] == "rec" or m[0] == "recommand":
             if len(m) != 2:
                 funcset.log("rec only 1 parameter.")
@@ -52,6 +64,7 @@ if __name__ == '__main__':
                 n += 1
             funcset.output("")
             funcset.output("===========================================================")
+            latest_result = top_rec_org[s]
         elif m[0] == "rd" or m[0] == "recd":
             if len(m) != 2:
                 funcset.log("rec only 1 parameter.")
@@ -71,12 +84,14 @@ if __name__ == '__main__':
                 funcset.output("-----------------------------------------------------------")
             funcset.output("")
             funcset.output("===========================================================")
+            latest_result = top_rec_details[s]
         elif m[0] == "stock" or m[0] == "s":
             sl = m[1].split(",")
             sl = [s.strip() for s in sl]
             funcset.output("=====================STOCK INFO ===========================")
-            funcset.show_stock_details(sl)
+            sr = funcset.show_stock_details(sl)
             funcset.output("===========================================================")
+            latest_result = sr
         elif m[0] == "quit" or m[0] == "q" or m[0] == "exit" or m[0] == "e":
             break
         else:

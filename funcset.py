@@ -290,6 +290,8 @@ def help():
     output("    [stock number]: a stock number such as 0000001")
     output("rd  [stock number]: get the recommand information of a stock")
     output("    [stock number]: a stock number such as 0000001")
+    output("save  [file path]: save latest result to a csv file")
+    output("    [file path]: a csv file path")
     output("===========================================================")
 
 
@@ -373,7 +375,11 @@ def show_stock_details(stock_num_list):
         sr.append(tuple(temp))
     for temp in sr:
         output("%-8s\t%-8s\t%-8s\t%-8s\t%-8s\t%-8s\t%-8s\t %-8s\t%-8s\t%-8s\t%-8s\t%-8s\t%-8s" % (
-            temp[0], temp[1], temp[2], temp[3], temp[4], temp[5], temp[6], temp[7], temp[8], temp[9], temp[10],
-            temp[11],
-            temp[12]))
-    return temp
+            str(temp[0]), str(temp[1]), str(temp[2]), str(temp[3]), str(temp[4]), str(temp[5]), str(temp[6]),
+            str(temp[7]), str(temp[8]), str(temp[9]), str(temp[10]),
+            str(temp[11]),
+            str(temp[12])))
+    sr.insert(0,
+              ["股票编码", "股票名称", "市盈率", "市净率", "涨(3天)", "涨(5天)", "涨(10天)", "涨(3周)", "涨(5周)", "涨(10周)", "涨(3月)", "涨(6月)",
+               "涨(12月)"])
+    return sr
