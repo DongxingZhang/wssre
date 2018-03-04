@@ -278,6 +278,7 @@ def get_working_days(start, end):
     return wd
 
 def help():
+    output("===========================================================")
     output("help : print help menu")
     output("getstock: get latest stock list")
     output("top [end date] [working days] : find the the most frequently recomanded  stock list")
@@ -289,6 +290,7 @@ def help():
     output("    [stock number]: a stock number such as 0000001")
     output("rd  [stock number]: get the recommand information of a stock")
     output("    [stock number]: a stock number such as 0000001")
+    output("===========================================================")
 
 
 def list_add_uniqe_tuple(list, tuple):
