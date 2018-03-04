@@ -29,51 +29,64 @@ class PROCESS(Process):
 
 
 class STOCK_REC:
-    def __init__(self, stock_num, stock_name, stock_rec_count, stock_rec_org):
+    def __init__(self, stock_num, stock_name, stock_rec_count=0):
         self.stock_num = stock_num
         self.stock_name = stock_name
         self.stock_rec_count = stock_rec_count
-        self.stock_rec_org = stock_rec_org
+        self.stock_rec = []
 
-    def get_stock_num(self):
+    def get_stocknum(self):
         return self.stock_num
 
-    def get_stock_name(self):
+    def get_stockname(self):
         return self.stock_name
 
     def get_rec_count(self):
         return self.stock_rec_count
 
-    def add_rec_count(self, stock_rec_count):
-        self.stock_rec_count = int(self.stock_rec_count) + int(stock_rec_count)
+    def add_rec_count(self):
+        self.stock_rec_count = self.stock_rec_count + 1
 
-    def get_rec_org(self):
-        return self.stock_rec_org
+    def get_rec(self):
+        return self.stock_rec
 
     def set_rec_count(self, stock_rec_count):
         self.stock_rec_count = stock_rec_count
 
-    def set_rec_org(self, stock_rec_org):
-        self.stock_rec_org = stock_rec_org
-
-    def add_rec_org(self, stock_rec_org):
-        self.stock_rec_org = self.stock_rec_org + stock_rec_org
+    def add_rec(self, stock_rec_date, stock_rec_org):
+        found = False
+        for s in self.stock_rec:
+            if s[0] == stock_rec_date and s[1] == stock_rec_org:
+                found = True
+                break
+        if not found:
+            self.stock_rec.append((stock_rec_date, stock_rec_org))
+        self.stock_rec_count = len(self.stock_rec)
 
     def get_string(self):
-        return self.get_stock_num() + "," + self.get_stock_name() + "," + str(self.get_rec_count()) + ",\"" + ",".join(
-            self.get_rec_org()) + "\""
+        return self.get_stocknum() + "," + self.get_stockname() + "," + str(self.get_rec_count())
 
 
 class STOCK:
-    def __init__(self, date, organization, stocknum, stockname, reason, reason_file, sfrom="", type=""):
-        self.date = date
-        self.organization = organization
-        self.stocknum = stocknum
-        self.stockname = stockname
-        self.reason = reason
-        self.reason_file = reason_file
-        self.sfrom = sfrom
-        self.type = type
+    def __init__(self, list):
+        self.date = list[0]
+        self.organization = list[1]
+        self.stocknum = list[2]
+        self.stockname = list[3]
+        self.reason = list[4]
+        self.reason_file = list[5]
+        self.sfrom = list[6]
+        self.type = list[7]
+
+    # def __init__(self, date, organization, stocknum, stockname, reason, reason_file, sfrom="", type=""):
+    #    self.date = date
+    #    self.organization = organization
+    #    self.stocknum = stocknum
+    #    self.stockname = stockname
+    #    self.reason = reason
+    #    self.reason_file = reason_file
+    #    self.sfrom = sfrom
+    #    self.type = type
 
     def get_date(self):
         return self.date

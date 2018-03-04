@@ -32,4 +32,4 @@ def get_report():
     records = generate_report(last_day, today)
     for temp_date, sr in records.items():
         funcset.write_listlist_csv(const.RECORDS_CSV.replace("DATEYYMMDD", temp_date), 'w', [r.get_array() for r in sr])
-    funcset.write_lastday(today + datetime.timedelta(days=-1))
+    funcset.write_lastday(today)

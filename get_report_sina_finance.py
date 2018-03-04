@@ -23,15 +23,13 @@ def get_sina_finance_page(html_text, start_date, end_date, stock_list):
     creab = body.find('div', {'class': 'creab'})
     span = creab.find_all("span")
     data = str(data).replace("\xa0", "")
-    hash_string = str(hex(int(hash(data)))).replace("0x", "").replace("-", "").upper()
     save_path = const.WEBCACHE_DIR + os.sep + span[len(span) - 1].text.strip()[::-1][0:10][::-1].replace("-", "")
-    file_path = const.WEBCACHE_CSV.replace("DATEYYMMDDHHMMDD",
-                                           hash_string).replace("DATEYYMMDD", span[
+    file_path = funcset.get_webcache_hash_file_name(data, span[
                                                                                                                        len(
                                                                                                                            span) - 1].text.strip()[
                                                                                                                    ::-1][
-                                                                                                                   0:10][
-                                                                                                                   ::-1].replace(
+                                                          0:10][
+                                                          ::-1].replace(
         "-", ""))
     if not os.path.exists(save_path):
         os.mkdir(save_path)

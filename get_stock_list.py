@@ -93,7 +93,7 @@ def check_stock_exists_in_string(stock_dict, string, file_path):
     s = []
     for k, v in stock_dict.items():
         if string.find(k) > -1 or string.find(v) > -1:
-            s.append(STOCK("", "", k, v, string, file_path))
+            s.append(STOCK(["", "", k, v, string, file_path, "", ""]))
     return s
 
 

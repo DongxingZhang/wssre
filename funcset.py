@@ -9,11 +9,18 @@ import traceback
 import tushare as ts
 
 import const
+import get_report_basic
+import get_stock_list
 import ws_base
 
 
 def log(msg):
-    print("wssr: " + msg)
+    pass
+    # print("wssr: " + msg)
+
+
+def output(msg, end='\r'):
+    print(msg, end)
 
 
 def write_str_to_file(file_name, contents):
@@ -163,7 +170,7 @@ def load_all_existing_report(start_date, end_date):
         list_array = read_listlist_csv(file_name)
         for sr in list_array:
             if not sr[0] in report_all.keys():
-                stock_rec = ws_base.STOCK_REC(sr[0], sr[1], sr[2], sr[3].split(","))
+                stock_rec = ws_base.STOCK_REC(sr[0], sr[1], sr[2])
                 report_all[sr[0]] = stock_rec
             else:
                 report_all[sr[0]].add_rec_count(sr[2])
@@ -191,17 +198,17 @@ def get_history_data_and_quota(stock_num, k_index, time_list):
         else:
             start = k_open[d - 1]
         if len(k_close) > 0 and len(k_open) >= d:
-            quota[str(d)] = str(format((end - start) / start, '.2%')) + "  " + str(d)
-    if k_index is None or len(k_index) == 0:
-        quota["kdj"] = str(getKDJBrandistock(k_index))
-        quota["macd"] = str(getMacdBrandistock(k_index))
-    else:
-        quota["kdj"] = "-"
-        quota["macd"] = "-"
+            quota[str(d)] = str(format((end - start) / start, '.2%'))
+    # if k_index is None or len(k_index) == 0:
+    #    quota["kdj"] = str(getKDJBrandistock(k_index))
+    #    quota["macd"] = str(getMacdBrandistock(k_index))
+    # else:
+    #    quota["kdj"] = "-"
+    #    quota["macd"] = "-"
     return quota
 
 
-def get_day_history_data_and_quota(stock_num, day_list, last_day):
+def get_day_history_data_and_quota(stock_num, last_day=datetime.datetime.now(), day_list=const.DAY_LIST):
     day_k = None
     i = 0
     while i <= 5 and day_k is None:
@@ -216,7 +223,7 @@ def get_day_history_data_and_quota(stock_num, day_list, last_day):
     return get_history_data_and_quota(stock_num, day_k, day_list)
 
 
-def get_week_history_data_and_quota(stock_num, week_list, last_day):
+def get_week_history_data_and_quota(stock_num, last_day=datetime.datetime.now(), week_list=const.WEEK_LIST):
     week_k = None
     i = 0
     while i <= 5 and week_k is None:
@@ -232,7 +239,7 @@ def get_week_history_data_and_quota(stock_num, week_list, last_day):
     return get_history_data_and_quota(stock_num, week_k, week_list)
 
 
-def get_month_history_data_and_quota(stock_num, month_list, last_day):
+def get_month_history_data_and_quota(stock_num, last_day=datetime.datetime.now(), month_list=const.MONTH_LIST):
     month_k = None
     i = 0
     while i <= 5 and month_k is None:
@@ -247,19 +254,124 @@ def get_month_history_data_and_quota(stock_num, month_list, last_day):
                 log("get_month_history_data_and_quota retry......" + str(i))
     return get_history_data_and_quota(stock_num, month_k, month_list)
 
-def help():
-    print("help")
 
-def top_reference(start_date = datetime.datetime.now(), workingdays = 3):
-    print("top_reference")
+def get_webcache_hash_file_name(cont, datasting):
+    hash_string = str(hex(int(hash(cont)))).replace("0x", "").replace("-", "")
+    i = 1
+    hash_string1 = hash_string
+    while os.path.exists(const.WEBCACHE_CSV.replace("DATEYYMMDDHHMMDD",
+                                                    hash_string1).replace(
+        "DATEYYMMDD", datasting)):
+        hash_string1 = hash_string + "-" + str(i)
+        i += 1
+    return const.WEBCACHE_CSV.replace("DATEYYMMDDHHMMDD",
+                                      hash_string1).replace(
+        "DATEYYMMDD", datasting)
+
+
+def get_working_days(start, end):
+    wd = 0
+    while start < end:
+        start = start + datetime.timedelta(days=1)
+        if start.weekday() not in [5, 6]:
+            wd += 1
+    return wd
+
+def help():
+    output("help : print help menu")
+    output("getstock: get latest stock list")
+    output("top [end date] [working days] : find the the most frequently recomanded  stock list")
+    output("    [end date]: end date (YYMMDD) like 20180101 ")
+    output("    [working days]: the period of days before the end date")
+    output("stock [stock list]: get infomation of the stocks in a stock list")
+    output("    [stock list]: a list of several stocks like 0000001,0000002,0000003")
+    output("rec [stock number]: get the recommand organization information of a stock")
+    output("    [stock number]: a stock number such as 0000001")
+    output("rd  [stock number]: get the recommand information of a stock")
+    output("    [stock number]: a stock number such as 0000001")
+
+
+def list_add_uniqe_tuple(list, tuple):
+    found = False
+    for l in list:
+        all_equal = True
+        for i in range(len(tuple)):
+            if l[i] != tuple[i]:
+                all_equal = False
+                break
+        if all_equal == True:
+            found = True
+            break
+    if found == False:
+        list.append(tuple)
+    return list
+
+
+def top_recommand(end_date=datetime.datetime.now().strftime('%Y%m%d'), workingdays=3):
+    current = datetime.datetime.strptime(end_date, '%Y%m%d')
+    start_date = current
+    stock_ref = {}
+    rec_details = {}
+    while get_working_days(start_date, current) < workingdays:
+        csv_file = const.RECORDS_CSV.replace("DATEYYMMDD", start_date.strftime('%Y-%m-%d'))
+        if os.path.exists(csv_file):
+            log("parsing the csv " + csv_file)
+            ll = read_listlist_csv(csv_file)
+            for l in ll:
+                s = ws_base.STOCK(l)
+                if s.get_stocknum() not in stock_ref.keys():
+                    stock_ref[s.get_stocknum()] = ws_base.STOCK_REC(s.get_stocknum(), s.get_stockname())
+                stock_ref[s.get_stocknum()].add_rec(s.get_date(), s.get_organization())
+                if s.get_stocknum() not in rec_details.keys():
+                    rec_details[s.get_stocknum()] = [(s.get_reason(), s.get_reason_file())]
+                else:
+                    rec_details[s.get_stocknum()] = list_add_uniqe_tuple(rec_details[s.get_stocknum()],
+                                                                         (s.get_reason(), s.get_reason_file()))
+        start_date = start_date + datetime.timedelta(days=-1)
+    final = []
+    rec_org = {}
+    for k, v in stock_ref.items():
+        if v.get_rec_count() > 5:
+            temp = []
+            temp.append(v.get_stocknum())
+            temp.append(v.get_stockname())
+            temp.append(v.get_rec_count())
+            final.append(tuple(temp))
+            rec_org[k] = sorted(v.get_rec(), key=lambda rec: rec[0], reverse=True)
+    final = sorted(final, key=lambda stock_rec: stock_rec[2], reverse=True)
+    output("end date: " + end_date + "    working days:" + str(workingdays))
+    output("")
+    n = 1
+    output("%-4s\t%-8s\t%-10s\t%-4s\t" % ("编号", "股票编码", "股票名称", "推荐次数"))
+    for r in final:
+        output("%-4s\t%-8s\t%-10s\t%-4s\t" % (n, r[0], r[1], str(r[2])))
+        n += 1
+    output("")
+    return [final, rec_org, rec_details]
 
 def show_stock_details(stock_num_list):
-    print("show_details")
-
-def show_reference_details(stock_num_list):
-    print("show_reference")
-
-
-
-
-
+    sr = []
+    temp = []
+    output("%-8s\t%-8s\t%-8s\t%-8s\t%-8s\t%-8s\t%-8s\t %-8s\t%-8s\t%-8s\t%-8s\t%-8s\t%-8s" % (
+        "股票编码", "股票名称", "市盈率", "市净率", "涨(3天)", "涨(5天)", "涨(10天)", "涨(3周)", "涨(5周)", "涨(10周)", "涨(3月)", "涨(6月)",
+        "涨(12月)"))
+    stock_list = get_stock_list.get_existing_stock_list()
+    for r in stock_num_list:
+        temp.append(r)
+        if r in stock_list.keys():
+            temp.append(stock_list[r])
+        else:
+            temp.append("NA")
+        basic = get_report_basic.get_stock_basic(r)
+        temp.append(basic["pb"])
+        temp.append(basic["pe"])
+        temp = temp + list(get_day_history_data_and_quota(r).values())
+        temp = temp + list(get_week_history_data_and_quota(r).values())
+        temp = temp + list(get_month_history_data_and_quota(r).values())
+        sr.append(tuple(temp))
+    for temp in sr:
+        output("%-8s\t%-8s\t%-8s\t%-8s\t%-8s\t%-8s\t%-8s\t %-8s\t%-8s\t%-8s\t%-8s\t%-8s\t%-8s" % (
+            temp[0], temp[1], temp[2], temp[3], temp[4], temp[5], temp[6], temp[7], temp[8], temp[9], temp[10],
+            temp[11],
+            temp[12]))
+    return temp

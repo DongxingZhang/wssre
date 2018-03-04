@@ -40,11 +40,11 @@ def get_stock_recommand_lastndays(last_day, ndays):
             #    financial_overview = financial_overview + item + "\t\t\t," + "\t,".join(v.values()) + "\n"
             # temp.append(financial_overview)
             temp = temp + list(
-                funcset.get_day_history_data_and_quota(r.get_stock_num(), const.DAY_LIST, last_day).values())
+                funcset.get_day_history_data_and_quota(r.get_stock_num(), last_day).values())
             temp = temp + list(
-                funcset.get_week_history_data_and_quota(r.get_stock_num(), const.WEEK_LIST, last_day).values())
+                funcset.get_week_history_data_and_quota(r.get_stock_num(), last_day).values())
             temp = temp + list(
-                funcset.get_month_history_data_and_quota(r.get_stock_num(), const.MONTH_LIST, last_day).values())
+                funcset.get_month_history_data_and_quota(r.get_stock_num(), last_day).values())
             temp.append(",".join(r.get_rec_org()))
             sr.append(tuple(temp))
     sr = sorted(sr, key=lambda stock: stock[2], reverse=True)
