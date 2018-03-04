@@ -6,9 +6,9 @@ import get_stock_list
 
 if __name__ == '__main__':
     stock_list = get_stock_list.get_existing_stock_list()
-    funcset.output("Initializing data")
+    funcset.output("Data initialization is running.")
     get_report.get_report()
-    funcset.output("Initialize data completed")
+    funcset.output("Data initialization is completed.")
     funcset.help()
     top_rec = None
     top_rec_org = None
@@ -19,9 +19,11 @@ if __name__ == '__main__':
         if m[0] == "help" or m[0] == "h":
             funcset.help()
         elif m[0] == "getstock" or m[0] == "gs":
-            funcset.output("Stock list update.")
+            funcset.output("==================STOCK LIST==========================")
+            funcset.output("Stock list is being updated.")
             get_stock_list.get_stock_list()
-            funcset.output("Stock list update complete.")
+            funcset.output("Stock list update is completed.")
+            funcset.output("======================================================")
         elif m[0] == "top" or m[0] == "t":
             funcset.output("=====================TOP==============================")
             if len(m) != 1 and len(m) != 3:

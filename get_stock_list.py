@@ -12,7 +12,7 @@ from ws_base import WS, STOCK
 
 # funcset.log(sys.getfilesystemencoding())
 
-def get_stock(html_text, start_date, end_date):
+def get_stock(html_text, start_date, end_date, stock_list):
     final = []
     bs = BeautifulSoup(html_text, "html.parser")  # 创建BeautifulSoup对象
     body = bs.body  # 获取body部分
@@ -34,9 +34,9 @@ def get_stock(html_text, start_date, end_date):
 
 
 def get_stock_list():
-    ws = WS('http://quote.eastmoney.com/stock_list.html', get_stock, encoding="GBK")
+    ws = WS('http://quote.eastmoney.com/stock_list.html', get_stock, None, None, None, encoding="GBK")
     stock_list = ws.get_data()
-
+    return stock_list
 
 def check_stock_exists_in_paragraph(stock_dict, para, title, file_path):
     l = len(para)
