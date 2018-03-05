@@ -46,10 +46,10 @@ if __name__ == '__main__':
             funcset.output("===========================================================")
             latest_result = top_rec
         elif m[0] == "r" or m[0] == "rec" or m[0] == "recommand":
+            funcset.output("=====================REC===================================")
             if len(m) != 2:
                 funcset.log("rec only 1 parameter.")
             s = m[1].strip()
-            funcset.output("=====================REC===================================")
             if top_rec_org is None:
                 [top_rec, top_rec_org, top_rec_details] = funcset.top_recommand()
             if s not in top_rec_org.keys():
@@ -66,10 +66,10 @@ if __name__ == '__main__':
             funcset.output("===========================================================")
             latest_result = top_rec_org[s]
         elif m[0] == "rd" or m[0] == "recd":
+            funcset.output("=====================REC DETAIL============================")
             if len(m) != 2:
                 funcset.log("rec only 1 parameter.")
             s = m[1].strip()
-            funcset.output("=====================REC===================================")
             if top_rec_org is None:
                 [top_rec, top_rec_org, top_rec_details] = funcset.top_recommand()
             if s not in top_rec_details.keys():
@@ -92,6 +92,13 @@ if __name__ == '__main__':
             sr = funcset.show_stock_details(sl)
             funcset.output("===========================================================")
             latest_result = sr
+        elif m[0] == "kdj":
+            funcset.output("=====================KDJ===================================")
+            if len(m) != 2:
+                funcset.log("rec only 1 parameter.")
+            s = m[1].strip()
+            latest_result = funcset.get_kdj(s)
+            funcset.output("===========================================================")
         elif m[0] == "quit" or m[0] == "q" or m[0] == "exit" or m[0] == "e":
             break
         else:

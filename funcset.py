@@ -18,16 +18,13 @@ def log(msg):
     pass
     # print("wssr: " + msg)
 
-
 def output(msg, end='\r'):
     print(msg, end)
-
 
 def write_str_to_file(file_name, contents):
     f = open(file_name, 'w')
     f.write(contents)
     f.close()
-
 
 def write_lastday(ld=None, csv=const.LAST_DAY_CSV):
     if ld is None:
@@ -35,7 +32,6 @@ def write_lastday(ld=None, csv=const.LAST_DAY_CSV):
     with open(csv, 'w', errors='ignore', newline='') as f:
         f.write(ld.strftime('%Y-%m-%d'))
         f.close()
-
 
 def read_lastday(csv=const.LAST_DAY_CSV):
     if not os.path.exists(csv):
@@ -46,7 +42,6 @@ def read_lastday(csv=const.LAST_DAY_CSV):
         f.close()
     return datetime.datetime.strptime(last_day, "%Y-%m-%d")
 
-
 # stock_data is the dataframe from tushare
 def getStockMacd(stock_data, macd_l=26, macd_s=12, macd_m=9):
     stock_data['ma_s'] = stock_data['close'].ewm(span=macd_s).mean().tolist()
@@ -55,19 +50,6 @@ def getStockMacd(stock_data, macd_l=26, macd_s=12, macd_m=9):
     stock_data['dea'] = stock_data['diff'].ewm(span=macd_m).mean().tolist()
     stock_data['macd'] = ((stock_data['diff'] - stock_data['dea']) * 2).tolist()
     return stock_data
-
-
-def getMacdBrandistock(stock_data):
-    try:
-        stock_data = getStockMacd(stock_data)
-        if stock_data['diff'].tolist()[0] > stock_data['dea'].tolist()[0] and stock_data['diff'].tolist()[1] < \
-                stock_data['dea'].tolist()[1]:
-            return "金叉"
-        else:
-            return "-"
-    except:
-        return "-"
-
 
 def getStockKDJ(stock_data, n=9, n1=3, n2=3):
     stock_length = len(stock_data)
@@ -98,18 +80,37 @@ def getStockKDJ(stock_data, n=9, n1=3, n2=3):
     return stock_data
 
 
-def getKDJBrandistock(stock_data):
+def getKDJBrandistock(args):
+    stock_data = args[0]
+    stock_length = len(stock_data)
+    kdj_list = ["-" for i in range(stock_length)]
     try:
         stock_data = getStockKDJ(stock_data)
-        if stock_data['j'].tolist()[0] > stock_data['k'].tolist()[0] and stock_data['j'].tolist()[0] > \
-                stock_data['d'].tolist()[0] and stock_data['j'].tolist()[1] < stock_data['k'].tolist()[1] and \
-                stock_data['j'].tolist()[1] < stock_data['d'].tolist()[1]:
-            return "金叉"
-        else:
-            return "-"
-    except:
-        return "-"
+        for i in range(1, stock_length - 1):
+            if stock_data['j'][i - 1] > stock_data['k'][i - 1] and stock_data['j'][i - 1] > \
+                    stock_data['d'][i - 1] and stock_data['j'][i] < stock_data['k'][i] and \
+                    stock_data['j'][i] < stock_data['d'][i]:
+                kdj_list[i] = "金叉"
+    except Exception as e:
+        log(e)
+        output("KDJ error.")
+    return kdj_list
 
+
+def getMacdBrandistock(args):
+    stock_data = args[0]
+    stock_length = len(stock_data)
+    macd_list = ["-" for i in range(stock_length)]
+    try:
+        stock_data = getStockMacd(stock_data)
+        for i in range(1, stock_length - 1):
+            if stock_data['diff'][i - 1] > stock_data['dea'][i - 1] and stock_data['diff'][i] < \
+                    stock_data['dea'][i]:
+                macd_list[i] = "金叉"
+    except Exception as e:
+        log(e)
+        output("MACD error.")
+    return macd_list
 
 def write_listlist_csv(filename, mode, listlist):
     with open(filename, mode, errors='ignore', newline='') as f:
@@ -117,7 +118,6 @@ def write_listlist_csv(filename, mode, listlist):
         f_csv.writerows(listlist)
         f.close()
         log(filename + " was generated!")
-
 
 def read_listlist_csv(filename):
     listlist = []
@@ -127,7 +127,6 @@ def read_listlist_csv(filename):
         f.close()
     return listlist
 
-
 def merge_report_records(get_data_all, get_data):
     for temp_date, stock_array in get_data.items():
         for r in stock_array:
@@ -135,7 +134,6 @@ def merge_report_records(get_data_all, get_data):
                 get_data_all[temp_date] = []
             get_data_all[temp_date].append(r)
     return get_data_all
-
 
 def generate_report_1(url, get_data_func, encoding, start_date, end_date, stock_list):
     get_report_all = {}
@@ -154,7 +152,6 @@ def generate_report_1(url, get_data_func, encoding, start_date, end_date, stock_
         log(msg)
         logging.exception(e)
     return get_report_all
-
 
 def load_all_existing_report(start_date, end_date):
     report_all = {}
@@ -178,7 +175,9 @@ def load_all_existing_report(start_date, end_date):
     return report_all
 
 
-def get_history_data_and_quota(stock_num, k_index, time_list):
+def get_quota(args):
+    k_index = args[0]
+    time_list = args[1]
     quota = {}
     if k_index is None or len(k_index) == 0:
         k_close = []
@@ -199,61 +198,23 @@ def get_history_data_and_quota(stock_num, k_index, time_list):
             start = k_open[d - 1]
         if len(k_close) > 0 and len(k_open) >= d:
             quota[str(d)] = str(format((end - start) / start, '.2%'))
-    # if k_index is None or len(k_index) == 0:
-    #    quota["kdj"] = str(getKDJBrandistock(k_index))
-    #    quota["macd"] = str(getMacdBrandistock(k_index))
-    # else:
-    #    quota["kdj"] = "-"
-    #    quota["macd"] = "-"
     return quota
 
 
-def get_day_history_data_and_quota(stock_num, last_day=datetime.datetime.now(), day_list=const.DAY_LIST):
-    day_k = None
+def get_history_data_and_quota(stock_num, ktype, func, last_day=datetime.datetime.now(), k_list=const.DAY_LIST):
+    k_index = None
     i = 0
-    while i <= 5 and day_k is None:
+    while i <= 5 and k_index is None:
         try:
             i = i + 1
             start_day = last_day + datetime.timedelta(days=-100)
-            day_k = ts.get_k_data(stock_num, start=start_day.strftime('%Y-%m-%d'), end=last_day.strftime('%Y-%m-%d'))
-        except BaseException as e:
-            log(e)
-            if day_k is None:
-                log("get_day_history_data_and_quota retry......" + str(i))
-    return get_history_data_and_quota(stock_num, day_k, day_list)
-
-
-def get_week_history_data_and_quota(stock_num, last_day=datetime.datetime.now(), week_list=const.WEEK_LIST):
-    week_k = None
-    i = 0
-    while i <= 5 and week_k is None:
-        try:
-            i = i + 1
-            start_day = last_day + datetime.timedelta(days=-100)
-            week_k = ts.get_k_data(stock_num, ktype='W', start=start_day.strftime('%Y-%m-%d'),
-                                   end=last_day.strftime('%Y-%m-%d'))
-        except BaseException as e:
-            log(e)
-            if week_k is None:
-                log("get_week_history_data_and_quota retry......" + str(i))
-    return get_history_data_and_quota(stock_num, week_k, week_list)
-
-
-def get_month_history_data_and_quota(stock_num, last_day=datetime.datetime.now(), month_list=const.MONTH_LIST):
-    month_k = None
-    i = 0
-    while i <= 5 and month_k is None:
-        try:
-            i = i + 1
-            start_day = last_day + datetime.timedelta(days=-100)
-            month_k = ts.get_k_data(stock_num, ktype='M', start=start_day.strftime('%Y-%m-%d'),
+            k_index = ts.get_k_data(stock_num, ktype=ktype, start=start_day.strftime('%Y-%m-%d'),
                                     end=last_day.strftime('%Y-%m-%d'))
         except BaseException as e:
             log(e)
-            if month_k is None:
-                log("get_month_history_data_and_quota retry......" + str(i))
-    return get_history_data_and_quota(stock_num, month_k, month_list)
-
+            if k_index is None:
+                log("get_history_data_and_quota retrying......" + str(i))
+    return func([k_index, k_list])
 
 def get_webcache_hash_file_name(cont, datasting):
     hash_string = str(hex(int(hash(cont)))).replace("0x", "").replace("-", "")
@@ -267,7 +228,6 @@ def get_webcache_hash_file_name(cont, datasting):
     return const.WEBCACHE_CSV.replace("DATEYYMMDDHHMMDD",
                                       hash_string1).replace(
         "DATEYYMMDD", datasting)
-
 
 def get_working_days(start, end):
     wd = 0
@@ -290,10 +250,13 @@ def help():
     output("    [stock number]: a stock number such as 0000001")
     output("rd  [stock number]: get the recommand information of a stock")
     output("    [stock number]: a stock number such as 0000001")
+    output("kdj  [stock number]: get the KDJ index of a stock")
+    output("    [stock number]: a stock number such as 0000001")
+    output("macd  [stock number]: get the MACD index of a stock")
+    output("    [stock number]: a stock number such as 0000001")
     output("save  [file path]: save latest result to a csv file")
     output("    [file path]: a csv file path")
     output("===========================================================")
-
 
 def list_add_uniqe_tuple(list, tuple):
     found = False
@@ -309,7 +272,6 @@ def list_add_uniqe_tuple(list, tuple):
     if found == False:
         list.append(tuple)
     return list
-
 
 def top_recommand(end_date=datetime.datetime.now().strftime('%Y%m%d'), workingdays=3):
     current = datetime.datetime.strptime(end_date, '%Y%m%d')
@@ -327,10 +289,10 @@ def top_recommand(end_date=datetime.datetime.now().strftime('%Y%m%d'), workingda
                     stock_ref[s.get_stocknum()] = ws_base.STOCK_REC(s.get_stocknum(), s.get_stockname())
                 stock_ref[s.get_stocknum()].add_rec(s.get_date(), s.get_organization())
                 if s.get_stocknum() not in rec_details.keys():
-                    rec_details[s.get_stocknum()] = [(s.get_reason(), s.get_reason_file())]
+                    rec_details[s.get_stocknum()] = [(s.get_reason().strip(), s.get_reason_file())]
                 else:
                     rec_details[s.get_stocknum()] = list_add_uniqe_tuple(rec_details[s.get_stocknum()],
-                                                                         (s.get_reason(), s.get_reason_file()))
+                                                                         (s.get_reason().strip(), s.get_reason_file()))
         start_date = start_date + datetime.timedelta(days=-1)
     final = []
     rec_org = {}
@@ -369,9 +331,9 @@ def show_stock_details(stock_num_list):
         basic = get_report_basic.get_stock_basic(r)
         temp.append(basic["pb"])
         temp.append(basic["pe"])
-        temp = temp + list(get_day_history_data_and_quota(r).values())
-        temp = temp + list(get_week_history_data_and_quota(r).values())
-        temp = temp + list(get_month_history_data_and_quota(r).values())
+        temp = temp + list(get_history_data_and_quota(r, "D", get_quota).values())
+        temp = temp + list(get_history_data_and_quota(r, "W", get_quota, k_list=const.WEEK_LIST).values())
+        temp = temp + list(get_history_data_and_quota(r, "M", get_quota, k_list=const.MONTH_LIST).values())
         sr.append(tuple(temp))
     for temp in sr:
         output("%-8s\t%-8s\t%-8s\t%-8s\t%-8s\t%-8s\t%-8s\t %-8s\t%-8s\t%-8s\t%-8s\t%-8s\t%-8s" % (
@@ -383,3 +345,17 @@ def show_stock_details(stock_num_list):
               ["股票编码", "股票名称", "市盈率", "市净率", "涨(3天)", "涨(5天)", "涨(10天)", "涨(3周)", "涨(5周)", "涨(10周)", "涨(3月)", "涨(6月)",
                "涨(12月)"])
     return sr
+
+
+def get_kdj(s):
+    pass
+    d_kdj = get_history_data_and_quota(s, "D", getKDJBrandistock)
+    w_kdj = get_history_data_and_quota(s, "W", getKDJBrandistock)
+    m_kdj = get_history_data_and_quota(s, "M", getKDJBrandistock)
+
+
+def get_macd(s):
+    pass
+    d_macd = get_history_data_and_quota(s, "D", getMacdBrandistock)
+    w_macd = get_history_data_and_quota(s, "W", getMacdBrandistock)
+    m_macd = get_history_data_and_quota(s, "M", getMacdBrandistock)
