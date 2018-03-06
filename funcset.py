@@ -57,20 +57,23 @@ def getStockKDJ(stock_data, n=9, n1=3, n2=3):
     k_list = [0.0 for i in range(stock_length)]
     d_list = [0.0 for i in range(stock_length)]
     j_list = [0.0 for i in range(stock_length)]
-    high_list = stock_data['high'].rolling(window=n, center=False).max().tolist()
-    low_list = stock_data['low'].rolling(window=n, center=False).min().tolist()
+
+    high_list = list(stock_data['high'])
+    low_list = list(stock_data['low'])
+    close_list = list(stock_data['close'])
+
     # complement the 0:n-1 value due to the rolling max/min method will get these values to nan
     for i in range(1, min(n, stock_length)):
         high_list[i - 1] = max(stock_data['high'][0:i])
         low_list[i - 1] = min(stock_data['low'][0:i])
 
-    rsv_list[0] = (stock_data['close'][0] - low_list[0]) / (high_list[0] - low_list[0]) * 100.0
+    rsv_list[0] = (close_list[0] - low_list[0]) / (high_list[0] - low_list[0]) * 100.0
     k_list[0] = rsv_list[0]
     d_list[0] = rsv_list[0]
     j_list[0] = rsv_list[0]
 
     for i in range(1, stock_length):
-        rsv_list[i] = (stock_data['close'][i] - low_list[i]) / (high_list[i] - low_list[i]) * 100.0
+        rsv_list[i] = (close_list[i] - low_list[i]) / (high_list[i] - low_list[i]) * 100.0
         k_list[i] = (k_list[i - 1] * (n1 - 1) + rsv_list[i]) / n1
         d_list[i] = (d_list[i - 1] * (n2 - 1) + k_list[i]) / n2
         j_list[i] = k_list[i] * 3.0 - d_list[i] * 2.0
@@ -80,37 +83,36 @@ def getStockKDJ(stock_data, n=9, n1=3, n2=3):
     return stock_data
 
 
-def getKDJBrandistock(args):
+def getKDJMacdBrandistock(args):
     stock_data = args[0]
+    type = args[1]
     stock_length = len(stock_data)
-    kdj_list = ["-" for i in range(stock_length)]
-    try:
-        stock_data = getStockKDJ(stock_data)
-        for i in range(1, stock_length - 1):
-            if stock_data['j'][i - 1] > stock_data['k'][i - 1] and stock_data['j'][i - 1] > \
-                    stock_data['d'][i - 1] and stock_data['j'][i] < stock_data['k'][i] and \
-                    stock_data['j'][i] < stock_data['d'][i]:
-                kdj_list[i] = "金叉"
-    except Exception as e:
-        log(e)
-        output("KDJ error.")
-    return kdj_list
-
-
-def getMacdBrandistock(args):
-    stock_data = args[0]
-    stock_length = len(stock_data)
+    if stock_length == 0:
+        output("no data")
+        return
+    stock_data = getStockKDJ(getStockMacd(stock_data))
+    diff_list = list(stock_data['diff'])
+    dea_list = list(stock_data['dea'])
+    date_list = list(stock_data['date'])
+    k_list = list(stock_data['k'])
+    d_list = list(stock_data['d'])
+    j_list = list(stock_data['j'])
     macd_list = ["-" for i in range(stock_length)]
-    try:
-        stock_data = getStockMacd(stock_data)
-        for i in range(1, stock_length - 1):
-            if stock_data['diff'][i - 1] > stock_data['dea'][i - 1] and stock_data['diff'][i] < \
-                    stock_data['dea'][i]:
-                macd_list[i] = "金叉"
-    except Exception as e:
-        log(e)
-        output("MACD error.")
-    return macd_list
+    kdj_list = ["-" for i in range(stock_length)]
+    for i in range(1, stock_length - 1):
+        if diff_list[i - 1] > dea_list[i - 1] and diff_list[i] < \
+                dea_list[i]:
+            macd_list[i] = "金叉"
+        if j_list[i - 1] > k_list[i - 1] and j_list[i - 1] > \
+                d_list[i - 1] and j_list[i] < k_list[i] and \
+                j_list[i] < d_list[i]:
+            kdj_list[i] = "金叉"
+    output("-----------------------------------------------------------")
+    output("%-8s\t%-10s\t%-10s" % (u"时间", u"KDJ金叉(" + type + ")", u"MACD金叉(" + type + ")"))
+    for i in range(stock_length):
+        if kdj_list[i] == "金叉" or macd_list[i] == "金叉":
+            output("%-8s\t%-10s\t%-10s" % (date_list[i], kdj_list[i], macd_list[i]))
+    output("-----------------------------------------------------------")
 
 def write_listlist_csv(filename, mode, listlist):
     with open(filename, mode, errors='ignore', newline='') as f:
@@ -210,6 +212,7 @@ def get_history_data_and_quota(stock_num, ktype, func, last_day=datetime.datetim
             start_day = last_day + datetime.timedelta(days=-100)
             k_index = ts.get_k_data(stock_num, ktype=ktype, start=start_day.strftime('%Y-%m-%d'),
                                     end=last_day.strftime('%Y-%m-%d'))
+            k_index = k_index[::-1]
         except BaseException as e:
             log(e)
             if k_index is None:
@@ -250,9 +253,9 @@ def help():
     output("    [stock number]: a stock number such as 0000001")
     output("rd  [stock number]: get the recommand information of a stock")
     output("    [stock number]: a stock number such as 0000001")
-    output("kdj  [stock number]: get the KDJ index of a stock")
+    output("kdj/macd  [stock number]: get the KDJ/MACD index of a stock")
     output("    [stock number]: a stock number such as 0000001")
-    output("macd  [stock number]: get the MACD index of a stock")
+    output("show [stock number]: show the detail info of a stock")
     output("    [stock number]: a stock number such as 0000001")
     output("save  [file path]: save latest result to a csv file")
     output("    [file path]: a csv file path")
@@ -347,15 +350,25 @@ def show_stock_details(stock_num_list):
     return sr
 
 
-def get_kdj(s):
-    pass
-    d_kdj = get_history_data_and_quota(s, "D", getKDJBrandistock)
-    w_kdj = get_history_data_and_quota(s, "W", getKDJBrandistock)
-    m_kdj = get_history_data_and_quota(s, "M", getKDJBrandistock)
+def get_kdjmacd(s):
+    get_history_data_and_quota(s, "D", getKDJMacdBrandistock, k_list="日")
+    get_history_data_and_quota(s, "W", getKDJMacdBrandistock, k_list="周")
+    get_history_data_and_quota(s, "M", getKDJMacdBrandistock, k_list="月")
 
 
-def get_macd(s):
-    pass
-    d_macd = get_history_data_and_quota(s, "D", getMacdBrandistock)
-    w_macd = get_history_data_and_quota(s, "W", getMacdBrandistock)
-    m_macd = get_history_data_and_quota(s, "M", getMacdBrandistock)
+def show_tushare(s):
+    k_index = None
+    i = 0
+    while i <= 5 and k_index is None:
+        try:
+            i = i + 1
+            last_day = datetime.datetime.now()
+            start_day = last_day + datetime.timedelta(days=-100)
+            k_index = ts.get_k_data(s, start=start_day.strftime('%Y-%m-%d'),
+                                    end=last_day.strftime('%Y-%m-%d'))
+            k_index = k_index[::-1]
+        except BaseException as e:
+            log(e)
+            if k_index is None:
+                log("show_tushare retrying......" + str(i))
+    output(k_index)

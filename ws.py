@@ -1,13 +1,12 @@
 # coding : UTF-8
 
 import funcset
-import get_report
 import get_stock_list
 
 if __name__ == '__main__':
     stock_list = get_stock_list.get_existing_stock_list()
     funcset.output("Data initialization is running.")
-    get_report.get_report()
+    # get_report.get_report()
     funcset.output("Data initialization is completed.")
     funcset.help()
     top_rec = None
@@ -21,7 +20,8 @@ if __name__ == '__main__':
             funcset.help()
         elif m[0] == "savetocsv" or m[0] == "save":
             if len(m) != 2:
-                funcset.log("rec only 1 parameter.")
+                funcset.output("rec only 1 parameter.")
+                continue
             s = m[1].strip()
             if latest_result == None:
                 funcset.output("latest result is None")
@@ -38,7 +38,8 @@ if __name__ == '__main__':
         elif m[0] == "top" or m[0] == "t":
             funcset.output("=====================TOP===================================")
             if len(m) != 1 and len(m) != 3:
-                funcset.log("top only accept zero or 2 parameters.")
+                funcset.output("top only accept zero or 2 parameters.")
+                continue
             elif len(m) == 1:
                 [top_rec, top_rec_org, top_rec_details] = funcset.top_recommand()
             elif len(m) == 3:
@@ -48,7 +49,8 @@ if __name__ == '__main__':
         elif m[0] == "r" or m[0] == "rec" or m[0] == "recommand":
             funcset.output("=====================REC===================================")
             if len(m) != 2:
-                funcset.log("rec only 1 parameter.")
+                funcset.output("rec only 1 parameter.")
+                continue
             s = m[1].strip()
             if top_rec_org is None:
                 [top_rec, top_rec_org, top_rec_details] = funcset.top_recommand()
@@ -68,7 +70,8 @@ if __name__ == '__main__':
         elif m[0] == "rd" or m[0] == "recd":
             funcset.output("=====================REC DETAIL============================")
             if len(m) != 2:
-                funcset.log("rec only 1 parameter.")
+                funcset.output("rec only 1 parameter.")
+                continue
             s = m[1].strip()
             if top_rec_org is None:
                 [top_rec, top_rec_org, top_rec_details] = funcset.top_recommand()
@@ -92,12 +95,21 @@ if __name__ == '__main__':
             sr = funcset.show_stock_details(sl)
             funcset.output("===========================================================")
             latest_result = sr
-        elif m[0] == "kdj":
-            funcset.output("=====================KDJ===================================")
+        elif m[0] == "kdj" or m[0] == "macd":
+            funcset.output("=====================KDJ MACD==============================")
             if len(m) != 2:
-                funcset.log("rec only 1 parameter.")
+                funcset.output("rec only 1 parameter.")
+                continue
             s = m[1].strip()
-            latest_result = funcset.get_kdj(s)
+            latest_result = funcset.get_kdjmacd(s)
+            funcset.output("===========================================================")
+        elif m[0] == "show":
+            funcset.output("=====================TUSHARE STOCK DATA====================")
+            if len(m) != 2:
+                funcset.output("rec only 1 parameter.")
+                continue
+            s = m[1].strip()
+            latest_result = funcset.show_tushare(s)
             funcset.output("===========================================================")
         elif m[0] == "quit" or m[0] == "q" or m[0] == "exit" or m[0] == "e":
             break
