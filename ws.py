@@ -1,12 +1,13 @@
 # coding : UTF-8
 
 import funcset
+import get_report
 import get_stock_list
 
 if __name__ == '__main__':
     stock_list = get_stock_list.get_existing_stock_list()
     funcset.output("Data initialization is running.")
-    # get_report.get_report()
+    get_report.get_report()
     funcset.output("Data initialization is completed.")
     funcset.help()
     top_rec = None
