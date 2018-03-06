@@ -1,5 +1,6 @@
 # coding : UTF-8
 
+import const
 import funcset
 import get_report
 import get_stock_list
@@ -132,6 +133,11 @@ if __name__ == '__main__':
             s = m[1].strip()
             latest_result = funcset.show_tushare(s)
             funcset.output("===========================================================")
+        elif m[0] == "settoprec":
+            if len(m) != 2:
+                funcset.output("settoprec only 1 parameter.")
+                continue
+            const.TOP_REC = int(m[1].strip())
         elif m[0] == "quit" or m[0] == "q" or m[0] == "exit" or m[0] == "e":
             break
         else:

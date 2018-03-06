@@ -209,7 +209,7 @@ def get_history_data_and_quota(stock_num, ktype, func, last_day=datetime.datetim
     while i <= 5 and k_index is None:
         try:
             i = i + 1
-            start_day = last_day + datetime.timedelta(days=-100)
+            start_day = last_day + datetime.timedelta(days=-400)
             k_index = ts.get_k_data(stock_num, ktype=ktype, start=start_day.strftime('%Y-%m-%d'),
                                     end=last_day.strftime('%Y-%m-%d'))
             k_index = k_index[::-1]
@@ -259,6 +259,8 @@ def help():
     output("    [stock number]: a stock number such as 0000001")
     output("save  [file path]: save latest result to a csv file")
     output("    [file path]: a csv file path")
+    output("settoprec  [top recommend count]: set max top recommend stock count")
+    output("    [top recommend count]: the number for max top recommend stock count, default is 20.")
     output("===========================================================")
 
 def list_add_uniqe_tuple(list, tuple):
@@ -301,13 +303,15 @@ def top_recommend(end_date=datetime.datetime.now().strftime('%Y%m%d'), workingda
     final = []
     rec_org = {}
     for k, v in stock_ref.items():
-        if v.get_rec_count() > 5:
+        if v.get_rec_count() > 0:
             temp = []
             temp.append(v.get_stocknum())
             temp.append(v.get_stockname())
             temp.append(v.get_rec_count())
             final.append(tuple(temp))
             rec_org[k] = sorted(v.get_rec(), key=lambda rec: rec[0], reverse=True)
+            if len(final) == const.TOP_REC:
+                break
     final = sorted(final, key=lambda stock_rec: stock_rec[2], reverse=True)
     output("end date: " + end_date + "    working days:" + str(workingdays))
     output("")
@@ -321,9 +325,9 @@ def top_recommend(end_date=datetime.datetime.now().strftime('%Y%m%d'), workingda
 
 def show_stock_details(stock_num_list):
     sr = []
-    temp = []
     stock_list = get_stock_list.get_existing_stock_list()
     for r in stock_num_list:
+        temp = []
         temp.append(r)
         if r in stock_list.keys():
             temp.append(stock_list[r])
