@@ -42,21 +42,21 @@ if __name__ == '__main__':
                 funcset.output("top only accept zero or 2 parameters.")
                 continue
             elif len(m) == 1:
-                [top_rec, top_rec_org, top_rec_details] = funcset.top_recommand()
+                [top_rec, top_rec_org, top_rec_details] = funcset.top_recommend()
             elif len(m) == 3:
-                [top_rec, top_rec_org, top_rec_details] = funcset.top_recommand(m[1], int(m[2]))
+                [top_rec, top_rec_org, top_rec_details] = funcset.top_recommend(m[1], int(m[2]))
             funcset.output("===========================================================")
             latest_result = top_rec
-        elif m[0] == "r" or m[0] == "rec" or m[0] == "recommand":
+        elif m[0] == "r" or m[0] == "rec" or m[0] == "recommend":
             funcset.output("=====================REC===================================")
             if len(m) != 2:
-                funcset.output("rec only 1 parameter.")
+                funcset.output("rec only accept 1 parameter.")
                 continue
             s = m[1].strip()
             if top_rec_org is None:
-                [top_rec, top_rec_org, top_rec_details] = funcset.top_recommand()
+                [top_rec, top_rec_org, top_rec_details] = funcset.top_recommend()
             if s not in top_rec_org.keys():
-                funcset.output(s + " is not recommanded.")
+                funcset.output(s + " is not recommended.")
                 continue
             funcset.output("股票代码:" + s + "  股票名称:" + stock_list[s])
             funcset.output("")
@@ -75,9 +75,9 @@ if __name__ == '__main__':
                 continue
             s = m[1].strip()
             if top_rec_org is None:
-                [top_rec, top_rec_org, top_rec_details] = funcset.top_recommand()
+                [top_rec, top_rec_org, top_rec_details] = funcset.top_recommend()
             if s not in top_rec_details.keys():
-                funcset.output(s + " is not recommanded.")
+                funcset.output(s + " is not recommended.")
                 continue
             funcset.output("股票代码:" + s + "  股票名称:" + stock_list[s])
             funcset.output("")
@@ -90,10 +90,30 @@ if __name__ == '__main__':
             funcset.output("===========================================================")
             latest_result = top_rec_details[s]
         elif m[0] == "stock" or m[0] == "s":
-            sl = m[1].split(",")
-            sl = [s.strip() for s in sl]
+            if len(m) != 2 and len(m) != 1:
+                funcset.output("stock only 0 or 1 parameter.")
+                continue
+            sl = []
+            rec = {}
+            if len(m) == 2:
+                sl = m[1].split(",")
+                sl = [s.strip() for s in sl]
+            elif len(m) == 1 and top_rec is not None:
+                sl = [v[0] for v in top_rec]
+                rec = {v[0]: v[2] for v in top_rec}
             funcset.output("=====================STOCK INFO ===========================")
             sr = funcset.show_stock_details(sl)
+            funcset.output("%-8s\t%-8s\t%-8s\t%-8s\t%-8s\t%-8s\t%-8s\t%-8s\t %-8s\t%-8s\t%-8s\t%-8s\t%-8s\t%-8s" % (
+                "股票编码", "股票名称", "推荐次数", "市盈率", "市净率", "涨(3天)", "涨(5天)", "涨(10天)", "涨(3周)", "涨(5周)", "涨(10周)", "涨(3月)",
+                "涨(6月)",
+                "涨(12月)"))
+            for temp in sr:
+                funcset.output("%-8s\t%-8s\t%-8s\t%-8s\t%-8s\t%-8s\t%-8s\t%-8s\t %-8s\t%-8s\t%-8s\t%-8s\t%-8s\t%-8s" % (
+                    str(temp[0]), str(temp[1]), str(rec[temp[0]]), str(temp[2]), str(temp[3]), str(temp[4]),
+                    str(temp[5]), str(temp[6]),
+                    str(temp[7]), str(temp[8]), str(temp[9]), str(temp[10]),
+                    str(temp[11]),
+                    str(temp[12])))
             funcset.output("===========================================================")
             latest_result = sr
         elif m[0] == "kdj" or m[0] == "macd":

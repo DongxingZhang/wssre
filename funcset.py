@@ -276,7 +276,8 @@ def list_add_uniqe_tuple(list, tuple):
         list.append(tuple)
     return list
 
-def top_recommand(end_date=datetime.datetime.now().strftime('%Y%m%d'), workingdays=3):
+
+def top_recommend(end_date=datetime.datetime.now().strftime('%Y%m%d'), workingdays=3):
     current = datetime.datetime.strptime(end_date, '%Y%m%d')
     start_date = current
     stock_ref = {}
@@ -321,9 +322,6 @@ def top_recommand(end_date=datetime.datetime.now().strftime('%Y%m%d'), workingda
 def show_stock_details(stock_num_list):
     sr = []
     temp = []
-    output("%-8s\t%-8s\t%-8s\t%-8s\t%-8s\t%-8s\t%-8s\t %-8s\t%-8s\t%-8s\t%-8s\t%-8s\t%-8s" % (
-        "股票编码", "股票名称", "市盈率", "市净率", "涨(3天)", "涨(5天)", "涨(10天)", "涨(3周)", "涨(5周)", "涨(10周)", "涨(3月)", "涨(6月)",
-        "涨(12月)"))
     stock_list = get_stock_list.get_existing_stock_list()
     for r in stock_num_list:
         temp.append(r)
@@ -338,15 +336,9 @@ def show_stock_details(stock_num_list):
         temp = temp + list(get_history_data_and_quota(r, "W", get_quota, k_list=const.WEEK_LIST).values())
         temp = temp + list(get_history_data_and_quota(r, "M", get_quota, k_list=const.MONTH_LIST).values())
         sr.append(tuple(temp))
-    for temp in sr:
-        output("%-8s\t%-8s\t%-8s\t%-8s\t%-8s\t%-8s\t%-8s\t %-8s\t%-8s\t%-8s\t%-8s\t%-8s\t%-8s" % (
-            str(temp[0]), str(temp[1]), str(temp[2]), str(temp[3]), str(temp[4]), str(temp[5]), str(temp[6]),
-            str(temp[7]), str(temp[8]), str(temp[9]), str(temp[10]),
-            str(temp[11]),
-            str(temp[12])))
-    sr.insert(0,
-              ["股票编码", "股票名称", "市盈率", "市净率", "涨(3天)", "涨(5天)", "涨(10天)", "涨(3周)", "涨(5周)", "涨(10周)", "涨(3月)", "涨(6月)",
-               "涨(12月)"])
+    # sr.insert(0,
+    #          ["股票编码", "股票名称", "市盈率", "市净率", "涨(3天)", "涨(5天)", "涨(10天)", "涨(3周)", "涨(5周)", "涨(10周)", "涨(3月)", "涨(6月)",
+    #           "涨(12月)"])
     return sr
 
 
