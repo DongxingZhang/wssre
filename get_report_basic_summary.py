@@ -6,7 +6,7 @@ import funcset
 import ws_base
 
 
-def get_data_func(html_text, start_date, end_date):
+def get_data_func(url, html_text, start_date, end_date):
     final = {}
     bs = BeautifulSoup(html_text, "lxml")
     body = bs.body
@@ -60,5 +60,5 @@ def get_stock_basic_summary(stock_num):
         stock_num = 'sh' + stock_num
     url = "http://finance.sina.com.cn/realstock/company/" + stock_num + "/nc.shtml"
     funcset.log("reading " + url)
-    ws = ws_base.WS(url, get_data_func, None, None, "GBK")
+    ws = ws_base.WS(url, get_data_func, None, None, None, "GBK")
     return ws.get_data()

@@ -1,39 +1,37 @@
 # coding : UTF-8
 
 import datetime
-import os
 
 from bs4 import BeautifulSoup
 
-import const
 import funcset
 import get_stock_list
 
 
-def get_51pdf_buy(html_text, start_date, end_date, stock_list):
+def get_51pdf_buy(url, html_text, start_date, end_date, stock_list):
     final = {}
     stop = False
     stock_list = get_stock_list.get_existing_stock_list()
     bs = BeautifulSoup(html_text, "html.parser")  # ����BeautifulSoup����
     body = bs.body  # ��ȡbody����
     data = body.find('div', {'class': 'morelist'})  # �ҵ�classΪmorelist��div
-    html_context = body.find('div', {'class': 'content_left'})
-    html_context_date = ""
+    # html_context = body.find('div', {'class': 'content_left'})
+    # html_context_date = ""
     file_path = ""
     table = data.find('table')  # ��ȡtbody����
     tr = table.find_all("tr")
     org_list = get_stock_list.get_existing_org_list()
     if len(tr) == 2:
         return [final, True]
-    if html_context is not None:
-        td = tr[0].find_all("td")
-        if len(td) == 4:
-            html_context = str(html_context).replace("\xa0", "")
-            save_path = const.WEBCACHE_DIR + os.sep + td[2].text.strip()
-            file_path = funcset.get_webcache_hash_file_name(html_context, td[2].text.strip())
-            if not os.path.exists(save_path):
-                os.mkdir(save_path)
-            funcset.write_str_to_file(file_path, html_context)
+    # if html_context is not None:
+    #     td = tr[0].find_all("td")
+    #     if len(td) == 4:
+    #         html_context = str(html_context).replace("\xa0", "")
+    #         save_path = const.WEBCACHE_DIR + os.sep + td[2].text.strip()
+    #         file_path = funcset.get_webcache_hash_file_name(html_context, td[2].text.strip())
+    #         if not os.path.exists(save_path):
+    #             os.mkdir(save_path)
+    #         funcset.write_str_to_file(file_path, html_context)
     for item in tr:
         td = item.find_all("td")
         if len(td) != 4:
@@ -47,7 +45,7 @@ def get_51pdf_buy(html_text, start_date, end_date, stock_list):
             if len(aarray) == 1:
                 funcset.log("something wrong on: " + aa.text)
                 continue
-            sa = get_stock_list.check_stock_exists_in_string(stock_list, aarray[1].strip(), file_path)
+            sa = get_stock_list.check_stock_exists_in_string(stock_list, aarray[1].strip(), url)
             if len(sa) == 0:
                 continue
             temp_organization = aarray[0].strip()

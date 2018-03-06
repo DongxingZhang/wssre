@@ -12,7 +12,7 @@ from ws_base import WS, STOCK
 
 # funcset.log(sys.getfilesystemencoding())
 
-def get_stock(html_text, start_date, end_date, stock_list):
+def get_stock(url, html_text, start_date, end_date, stock_list):
     final = []
     bs = BeautifulSoup(html_text, "html.parser")  # 创建BeautifulSoup对象
     body = bs.body  # 获取body部分
@@ -60,7 +60,6 @@ def check_stock_exists_in_paragraph(stock_dict, para, title, file_path):
     sr = list({}.fromkeys(sr).keys())
     return sr
 
-
 def get_existing_stock_list():
     stock = {}
     if not os.path.exists(const.STOCK_LIST_CSV):
@@ -73,7 +72,6 @@ def get_existing_stock_list():
         f.close()
     return stock
 
-
 def get_existing_org_list():
     org_list = {}
     with open(const.ORG_LIST_CSV, 'r', errors='ignore', newline='') as f:
@@ -84,10 +82,8 @@ def get_existing_org_list():
         f.close()
     return org_list
 
-
 def check_valid_stock_num(stocknum):
     return stocknum.find("60") == 0 or stocknum.find("30") == 0 or stocknum.find("00") == 0
-
 
 def check_stock_exists_in_string(stock_dict, string, file_path):
     s = []
@@ -96,13 +92,11 @@ def check_stock_exists_in_string(stock_dict, string, file_path):
             s.append(STOCK(["", "", k, v, string, file_path, "", ""]))
     return s
 
-
 def check_valid_org_num(org_list, string):
     for id, org in org_list.items():
         if string.find(org) > -1 or org.find(string) > -1:
             return org
     return None
-
 
 if __name__ == '__main__':
     get_stock_list()

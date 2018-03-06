@@ -203,4 +203,4 @@ class WS:
         self.html = rep.text
 
     def get_data(self):
-        return self.get_data_func(self.html, self.start_date, self.end_date, self.stock_list)
+        return self.get_data_func(self.url, self.html, self.start_date, self.end_date, self.stock_list)

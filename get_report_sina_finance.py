@@ -1,17 +1,15 @@
 # coding : UTF-8
 
 import datetime
-import os
 
 from bs4 import BeautifulSoup
 
-import const
 import funcset
 import get_stock_list
 import ws_base
 
 
-def get_sina_finance_page(html_text, start_date, end_date, stock_list):
+def get_sina_finance_page(url, html_text, start_date, end_date, stock_list):
     bs = BeautifulSoup(html_text, "html.parser")
     body = bs.body
     blk_02 = body.find('div', {'class': 'blk_02'})
@@ -22,23 +20,23 @@ def get_sina_finance_page(html_text, start_date, end_date, stock_list):
     cont = pa.text.replace(u'\xa0', u' ').strip()
     creab = body.find('div', {'class': 'creab'})
     span = creab.find_all("span")
-    data = str(data).replace("\xa0", "")
-    save_path = const.WEBCACHE_DIR + os.sep + span[len(span) - 1].text.strip()[::-1][0:10][::-1].replace("-", "")
-    file_path = funcset.get_webcache_hash_file_name(data, span[
-                                                                                                                       len(
-                                                                                                                           span) - 1].text.strip()[
-                                                                                                                   ::-1][
-                                                          0:10][
-                                                          ::-1].replace(
-        "-", ""))
-    if not os.path.exists(save_path):
-        os.mkdir(save_path)
-    funcset.write_str_to_file(file_path, data)
-    sa = get_stock_list.check_stock_exists_in_paragraph(stock_list, cont, h1.text.strip(), file_path)
+    # data = str(data).replace("\xa0", "")
+    # save_path = const.WEBCACHE_DIR + os.sep + span[len(span) - 1].text.strip()[::-1][0:10][::-1].replace("-", "")
+    # file_path = funcset.get_webcache_hash_file_name(data, span[
+    #                                                                                                                    len(
+    #                                                                                                                        span) - 1].text.strip()[
+    #                                                                                                                ::-1][
+    #                                                       0:10][
+    #                                                       ::-1].replace(
+    #     "-", ""))
+    # if not os.path.exists(save_path):
+    #     os.mkdir(save_path)
+    # funcset.write_str_to_file(file_path, data)
+    sa = get_stock_list.check_stock_exists_in_paragraph(stock_list, cont, h1.text.strip(), url)
     return sa
 
 
-def get_sina_finance(html_text, start_date, end_date, stock_list):
+def get_sina_finance(url, html_text, start_date, end_date, stock_list):
     final = {}
     stop = False
     bs = BeautifulSoup(html_text, "html.parser")
