@@ -41,7 +41,7 @@ def get_stock_list():
 def check_stock_exists_in_paragraph(stock_dict, para, title, file_path):
     l = len(para)
     sr = []
-    rec = ['推荐', '增持', '买入', '关注', '增长', '受益', '突破', '领先', '突出', '优势', '上涨', '加速']
+    rec = ['推荐', '增持', '买入', '关注', '增长', '受益', '突破', '领先', '突出', '优势', '上涨', '加速', '加快']
     para_array = para.split("。")
     para_array1 = []
     for p in para_array:
@@ -50,7 +50,7 @@ def check_stock_exists_in_paragraph(stock_dict, para, title, file_path):
             para_array.remove(p)
             para_array1 = para_array1 + p_array
     para_array = para_array + para_array1
-    para_array.append("推荐" + title)
+    para_array.append("推荐:" + title)
 
     for p in para_array:
         for r in rec:

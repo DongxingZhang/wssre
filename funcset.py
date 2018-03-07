@@ -17,6 +17,7 @@ import ws_base
 def log(msg):
     write_str_to_file(const.LOG_FILE, "wssr: " + msg, "a")
 
+
 def output(msg, end='\r'):
     print(msg, end)
 
@@ -26,12 +27,14 @@ def write_str_to_file(file_name, contents, mode="w"):
     f.write(contents)
     f.close()
 
+
 def write_lastday(ld=None, csv=const.LAST_DAY_CSV):
     if ld is None:
         ld = datetime.datetime.now() + datetime.timedelta(days=-1)
     with open(csv, 'w', errors='ignore', newline='') as f:
         f.write(ld.strftime('%Y-%m-%d'))
         f.close()
+
 
 def read_lastday(csv=const.LAST_DAY_CSV):
     if not os.path.exists(csv):
@@ -41,6 +44,7 @@ def read_lastday(csv=const.LAST_DAY_CSV):
         last_day = f.readline()
         f.close()
     return datetime.datetime.strptime(last_day, "%Y-%m-%d")
+
 
 # stock_data is the dataframe from tushare
 def getStockMacd(stock_data, macd_l=26, macd_s=12, macd_m=9):
@@ -107,12 +111,13 @@ def getKDJMacdBrandistock(args):
                 d_list[i - 1] and j_list[i] < k_list[i] and \
                 j_list[i] < d_list[i]:
             kdj_list[i] = "金叉"
-    output("-----------------------------------------------------------")
-    output("%-8s\t%-10s\t%-10s" % (u"时间", u"KDJ金叉(" + type + ")", u"MACD金叉(" + type + ")"))
-    for i in range(stock_length):
-        if kdj_list[i] == "金叉" or macd_list[i] == "金叉":
-            output("%-8s\t%-10s\t%-10s" % (date_list[i], kdj_list[i], macd_list[i]))
-    output("-----------------------------------------------------------")
+    # output("-----------------------------------------------------------")
+    # output("%-8s\t%-10s\t%-10s" % (u"时间", u"KDJ金叉(" + type + ")", u"MACD金叉(" + type + ")"))
+    # for i in range(stock_length):
+    #    if kdj_list[i] == "金叉" or macd_list[i] == "金叉":
+    #        output("%-8s\t%-10s\t%-10s" % (date_list[i], kdj_list[i], macd_list[i]))
+    # output("-----------------------------------------------------------")
+    return [date_list, kdj_list, macd_list]
 
 def write_listlist_csv(filename, mode, listlist):
     with open(filename, mode, errors='ignore', newline='') as f:
@@ -144,9 +149,10 @@ def generate_report_1(url, get_data_func, encoding, start_date, end_date, stock_
     try:
         while not stop:
             newurl = url.replace("PAGENUMBER", str(i))
-            log("reading url path:" + newurl + " with " + encoding)
             ws = ws_base.WS(newurl, get_data_func, start_date, end_date, stock_list, encoding)
             [get_report, stop] = ws.get_data()
+            log("reading url path:" + newurl + " with " + encoding + "(" + str(
+                sum([len(v) for v in get_report.values()])) + ")")
             get_report_all = merge_report_records(get_report_all, get_report)
             i = i + 1
     except BaseException as e:
@@ -313,14 +319,6 @@ def top_recommend(end_date=datetime.datetime.now().strftime('%Y%m%d'), workingda
             if len(final) == const.TOP_REC:
                 break
     final = sorted(final, key=lambda stock_rec: stock_rec[2], reverse=True)
-    output("end date: " + end_date + "    working days:" + str(workingdays))
-    output("")
-    n = 1
-    output("%-4s\t%-8s\t%-10s\t%-4s\t" % ("编号", "股票编码", "股票名称", "推荐次数"))
-    for r in final:
-        output("%-4s\t%-8s\t%-10s\t%-4s\t" % (n, r[0], r[1], str(r[2])))
-        n += 1
-    output("")
     return [final, rec_org, rec_details]
 
 def show_stock_details(stock_num_list):
@@ -340,16 +338,15 @@ def show_stock_details(stock_num_list):
         temp = temp + list(get_history_data_and_quota(r, "W", get_quota, k_list=const.WEEK_LIST).values())
         temp = temp + list(get_history_data_and_quota(r, "M", get_quota, k_list=const.MONTH_LIST).values())
         sr.append(tuple(temp))
-    # sr.insert(0,
-    #          ["股票编码", "股票名称", "市盈率", "市净率", "涨(3天)", "涨(5天)", "涨(10天)", "涨(3周)", "涨(5周)", "涨(10周)", "涨(3月)", "涨(6月)",
-    #           "涨(12月)"])
     return sr
 
 
 def get_kdjmacd(s):
-    get_history_data_and_quota(s, "D", getKDJMacdBrandistock, k_list="日")
-    get_history_data_and_quota(s, "W", getKDJMacdBrandistock, k_list="周")
-    get_history_data_and_quota(s, "M", getKDJMacdBrandistock, k_list="月")
+    results = {}
+    results["Day"] = get_history_data_and_quota(s, "D", getKDJMacdBrandistock, k_list="Day")
+    results["Week"] = get_history_data_and_quota(s, "W", getKDJMacdBrandistock, k_list="Week")
+    results["Month"] = get_history_data_and_quota(s, "M", getKDJMacdBrandistock, k_list="Month")
+    return results
 
 
 def show_tushare(s):

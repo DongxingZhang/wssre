@@ -6,15 +6,15 @@ import get_report
 import get_stock_list
 
 if __name__ == '__main__':
-    stock_list = get_stock_list.get_existing_stock_list()
-    funcset.output("Data initialization is running.")
-    get_report.get_report()
-    funcset.output("Data initialization is completed.")
     funcset.help()
     top_rec = None
     top_rec_org = None
     top_rec_details = None
     latest_result = None
+    stock_list = get_stock_list.get_existing_stock_list()
+    funcset.output("Data initialization is running.")
+    get_report.get_report()
+    funcset.output("Data initialization is completed.")
     while True:
         print('>>', end='')
         m = input().strip().lower().split(" ")
@@ -36,7 +36,6 @@ if __name__ == '__main__':
             sl = get_stock_list.get_stock_list()
             funcset.output("Stock list update is completed.")
             funcset.output("===========================================================")
-            latest_result = sl
         elif m[0] == "top" or m[0] == "t":
             funcset.output("=====================TOP===================================")
             if len(m) != 1 and len(m) != 3:
@@ -46,6 +45,14 @@ if __name__ == '__main__':
                 [top_rec, top_rec_org, top_rec_details] = funcset.top_recommend()
             elif len(m) == 3:
                 [top_rec, top_rec_org, top_rec_details] = funcset.top_recommend(m[1], int(m[2]))
+            funcset.output("End Date: " + m[1] + "    Working Days:" + str(m[2]))
+            funcset.output("")
+            n = 1
+            top_rec.insert(0, ["No.", "StockID", "StockName", "RecCount"])
+            for r in top_rec:
+                funcset.output("%-4s\t%-8s\t%-10s\t%-4s\t" % (n, r[0], r[1], str(r[2])))
+                n += 1
+            funcset.output("")
             funcset.output("===========================================================")
             latest_result = top_rec
         elif m[0] == "r" or m[0] == "rec" or m[0] == "recommend":
@@ -59,10 +66,10 @@ if __name__ == '__main__':
             if s not in top_rec_org.keys():
                 funcset.output(s + " is not recommended.")
                 continue
-            funcset.output("股票代码:" + s + "  股票名称:" + stock_list[s])
-            funcset.output("")
-            funcset.output("%-4s\t%-8s\t%-10s\t" % (u"编号", u"推荐时间", u"推荐机构"))
             n = 1
+            funcset.output("Stock ID:" + s + "  Stock Name:" + stock_list[s])
+            funcset.output("")
+            funcset.output("%-4s\t%-8s\t%-10s\t" % ("No.", "RecDate", "RecOrg"))
             for v in top_rec_org[s]:
                 funcset.output("%-4s\t%-8s\t%-10s\t" % (n, v[0], v[1]))
                 n += 1
@@ -80,7 +87,7 @@ if __name__ == '__main__':
             if s not in top_rec_details.keys():
                 funcset.output(s + " is not recommended.")
                 continue
-            funcset.output("股票代码:" + s + "  股票名称:" + stock_list[s])
+            funcset.output("Stock ID:" + s + "  Stock Name:" + stock_list[s])
             funcset.output("")
             for v in top_rec_details[s]:
                 funcset.output("-----------------------------------------------------------")
@@ -104,10 +111,10 @@ if __name__ == '__main__':
                 rec = {v[0]: v[2] for v in top_rec}
             funcset.output("=====================STOCK INFO ===========================")
             sr = funcset.show_stock_details(sl)
-            funcset.output("%-8s\t%-8s\t%-8s\t%-8s\t%-8s\t%-8s\t%-8s\t%-8s\t %-8s\t%-8s\t%-8s\t%-8s\t%-8s\t%-8s" % (
-                "股票编码", "股票名称", "推荐次数", "市盈率", "市净率", "涨(3天)", "涨(5天)", "涨(10天)", "涨(3周)", "涨(5周)", "涨(10周)", "涨(3月)",
-                "涨(6月)",
-                "涨(12月)"))
+            sr.insert(0, ["StockID", "StockName", "RecCount", "PE", "PB", "Change(3D)", "Change(5D)", "Change(10D)",
+                          "Change(3W)", "Change(5W)", "Change(10W)", "Change(3M)",
+                          "Change(6M)",
+                          "Change(12M)"])
             for temp in sr:
                 funcset.output("%-8s\t%-8s\t%-8s\t%-8s\t%-8s\t%-8s\t%-8s\t%-8s\t %-8s\t%-8s\t%-8s\t%-8s\t%-8s\t%-8s" % (
                     str(temp[0]), str(temp[1]), str(rec[temp[0]]), str(temp[2]), str(temp[3]), str(temp[4]),
@@ -118,12 +125,23 @@ if __name__ == '__main__':
             funcset.output("===========================================================")
             latest_result = sr
         elif m[0] == "kdj" or m[0] == "macd":
-            funcset.output("=====================KDJ MACD==============================")
+            funcset.output("=====================KDJ&MACD==============================")
             if len(m) != 2:
                 funcset.output("rec only 1 parameter.")
                 continue
             s = m[1].strip()
-            latest_result = funcset.get_kdjmacd(s)
+            km = funcset.get_kdjmacd(s)
+            date_list = km[0]
+            kdj_list = km[1]
+            macd_list = km[2]
+            stock_length = len(date_list)
+            for type in km:
+                funcset.output("-----------------------------------------------------------")
+                funcset.output("%-8s\t%-10s\t%-10s" % ("DATE", "KDJ CROSS(" + type + ")", "MACD CROSS(" + type + ")"))
+                for i in range(stock_length):
+                    if kdj_list[i] == "金叉" or macd_list[i] == "金叉":
+                        funcset.output("%-8s\t%-10s\t%-10s" % (date_list[i], kdj_list[i], macd_list[i]))
+                funcset.output("-----------------------------------------------------------")
             funcset.output("===========================================================")
         elif m[0] == "show":
             funcset.output("=====================TUSHARE STOCK DATA====================")
@@ -138,7 +156,9 @@ if __name__ == '__main__':
                 funcset.output("settoprec only 1 parameter.")
                 continue
             const.TOP_REC = int(m[1].strip())
+        elif m[0] == "last":
+            print(latest_result)
         elif m[0] == "quit" or m[0] == "q" or m[0] == "exit" or m[0] == "e":
             break
         else:
-            funcset.output("invalid command.")
+            funcset.output("invalid command " + m[0] + ".")
