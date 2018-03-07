@@ -53,7 +53,7 @@ class STOCK_REC:
     def add_rec(self, stock_rec_date, stock_rec_org):
         found = False
         for s in self.stock_rec:
-            if s[0] == stock_rec_date and s[1] == stock_rec_org:
+            if s[0] == stock_rec_date and (s[1].find(stock_rec_org) >= 0 or stock_rec_org.find(s[1]) >= 0):
                 found = True
                 break
         if not found:

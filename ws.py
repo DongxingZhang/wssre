@@ -37,7 +37,7 @@ if __name__ == '__main__':
             funcset.output("Stock list update is completed.")
             funcset.output("===========================================================")
         elif m[0] == "top" or m[0] == "t":
-            funcset.output("=====================TOP===================================")
+            funcset.output("=====================TOP(" + str(const.TOP_REC) + ")===============================")
             if len(m) != 1 and len(m) != 3:
                 funcset.output("top only accept zero or 2 parameters.")
                 continue
