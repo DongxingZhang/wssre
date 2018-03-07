@@ -59,6 +59,6 @@ def get_stock_basic_summary(stock_num):
     elif stock_num.find("60") == 0:
         stock_num = 'sh' + stock_num
     url = "http://finance.sina.com.cn/realstock/company/" + stock_num + "/nc.shtml"
-    funcset.log("reading " + url)
+    funcset.log("∂¡»°URL:" + url)
     ws = ws_base.WS(url, get_data_func, None, None, None, "GBK")
     return ws.get_data()

@@ -34,6 +34,6 @@ def get_stock_basic(stock_num):
     elif stock_num.find("60") == 0:
         stock_num = 'sh' + stock_num
     url = "http://gu.qq.com/" + stock_num + "/gp"
-    funcset.log("reading " + url)
+    funcset.log("读取URL:" + url)
     ws = ws_base.WS(url, get_data_func, None, None, None, "utf-8")
     return ws.get_data()

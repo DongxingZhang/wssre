@@ -63,7 +63,7 @@ def get_51pdf(url, html_text, start_date, end_date, stock_list):
                         s.set_from("51pdf")
                         final[temp_date].append(s)
     except Exception as e:
-        funcset.log(url + " was crashed")
+        funcset.log(url + "崩溃了")
         funcset.log(e)
     return [final, stop]
 

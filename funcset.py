@@ -1,4 +1,4 @@
-﻿# coding : UTF-8
+# coding : UTF-8
 
 import csv
 import datetime
@@ -10,12 +10,11 @@ import tushare as ts
 
 import const
 import get_report_basic
-import get_stock_list
 import ws_base
 
 
 def log(msg):
-    write_str_to_file(const.LOG_FILE, "wssr: " + msg, "a")
+    write_str_to_file(const.LOG_FILE, "WSSR: " + msg, "a")
 
 
 def output(msg, end='\r'):
@@ -111,12 +110,6 @@ def getKDJMacdBrandistock(args):
                 d_list[i - 1] and j_list[i] < k_list[i] and \
                 j_list[i] < d_list[i]:
             kdj_list[i] = "金叉"
-    # output("-----------------------------------------------------------")
-    # output("%-8s\t%-10s\t%-10s" % (u"时间", u"KDJ金叉(" + type + ")", u"MACD金叉(" + type + ")"))
-    # for i in range(stock_length):
-    #    if kdj_list[i] == "金叉" or macd_list[i] == "金叉":
-    #        output("%-8s\t%-10s\t%-10s" % (date_list[i], kdj_list[i], macd_list[i]))
-    # output("-----------------------------------------------------------")
     return [date_list, kdj_list, macd_list]
 
 def write_listlist_csv(filename, mode, listlist):
@@ -124,7 +117,7 @@ def write_listlist_csv(filename, mode, listlist):
         f_csv = csv.writer(f)
         f_csv.writerows(listlist)
         f.close()
-        log(filename + " was generated!")
+        log(filename + "写入完毕!")
 
 def read_listlist_csv(filename):
     listlist = []
@@ -151,7 +144,7 @@ def generate_report_1(url, get_data_func, encoding, start_date, end_date, stock_
             newurl = url.replace("PAGENUMBER", str(i))
             ws = ws_base.WS(newurl, get_data_func, start_date, end_date, stock_list, encoding)
             [get_report, stop] = ws.get_data()
-            log("reading url path:" + newurl + " with " + encoding + "(" + str(
+            log("读取URL:" + newurl + " with " + encoding + "(" + str(
                 sum([len(v) for v in get_report.values()])) + ")")
             get_report_all = merge_report_records(get_report_all, get_report)
             i = i + 1
@@ -200,7 +193,7 @@ def get_history_data_and_quota(stock_num, ktype, func, last_day=datetime.datetim
         except BaseException as e:
             log(e)
             if k_index is None:
-                log("get_history_data_and_quota retrying......" + str(i))
+                log("获取历史......" + str(i))
     return func([k_index, k_list])
 
 def get_webcache_hash_file_name(cont, datasting):
@@ -226,25 +219,18 @@ def get_working_days(start, end):
 
 def help():
     output("===========================================================")
-    output("help : print help menu")
-    output("getstock: get latest stock list")
-    output("top [end date] [working days] : find the the most frequently recomanded  stock list")
-    output("    [end date]: end date (YYMMDD) like 20180101 ")
-    output("    [working days]: the period of days before the end date")
-    output("stock [stock list]: get infomation of the stocks in a stock list")
-    output("    [stock list]: a list of several stocks like 0000001,0000002,0000003")
-    output("rec [stock number]: get the recommand organization information of a stock")
-    output("    [stock number]: a stock number such as 0000001")
-    output("rd  [stock number]: get the recommand information of a stock")
-    output("    [stock number]: a stock number such as 0000001")
-    output("kdj/macd  [stock number]: get the KDJ/MACD index of a stock")
-    output("    [stock number]: a stock number such as 0000001")
-    output("show [stock number]: show the detail info of a stock")
-    output("    [stock number]: a stock number such as 0000001")
-    output("save  [file path]: save latest result to a csv file")
-    output("    [file path]: a csv file path")
-    output("settoprec  [top recommend count]: set max top recommend stock count")
-    output("    [top recommend count]: the number for max top recommend stock count, default is 20.")
+    output("help :打印帮助")
+    output("getstock:获取A股票列表")
+    output("top [结束时期，如20180305] [工作日天数，如3]: 查找从[结束日期]")
+    output("     开始往前给定的工作日时间内推荐次数最多的股票列表")
+    output("stock [股票列表]:获取[股票列表]指标信息。")
+    output("     [股票列表]: 如0000001,0000002,0000003。")
+    output("rec [股票编号]:获取这个股票的相关推荐信息")
+    output("rd  [股票代码，如000001]:获取股票推荐信息和网页。")
+    output("kdj/macd  [股票代码,如000001]: 获取MACD/KDJ金叉信息")
+    output("show [股票代码,如000001]: 打印来自tushare的k线数据")
+    output("save  [文件路径]: 保存最后的结果到csv文件。")
+    output("settoprec  [top推荐股票数量]: 设置top推荐股票数量")
     output("===========================================================")
 
 def list_add_uniqe_tuple(list, tuple):
@@ -271,11 +257,10 @@ def top_recommend(end_date=datetime.datetime.now().strftime('%Y%m%d'), workingda
     while get_working_days(start_date, current) < workingdays:
         csv_file = const.RECORDS_CSV.replace("DATEYYMMDD", start_date.strftime('%Y-%m-%d'))
         if os.path.exists(csv_file):
-            log("parsing the csv " + csv_file)
+            log("分析csv文件" + csv_file)
             ll = read_listlist_csv(csv_file)
             for l in ll:
                 s = ws_base.STOCK(l)
-                # log(s.get_stockname() + "," + s.get_date() + "," + s.get_organization() + "\r\n")
                 if s.get_stocknum() not in stock_ref.keys():
                     stock_ref[s.get_stocknum()] = ws_base.STOCK_REC(s.get_stocknum(), s.get_stockname())
                 stock_ref[s.get_stocknum()].add_rec(s.get_date(), s.get_organization())
@@ -284,7 +269,7 @@ def top_recommend(end_date=datetime.datetime.now().strftime('%Y%m%d'), workingda
                 else:
                     rec_details[s.get_stocknum()] = list_add_uniqe_tuple(rec_details[s.get_stocknum()],
                                                                          (s.get_reason().strip(), s.get_reason_file()))
-            log("parse the csv " + csv_file + " done (" + str(len(ll)) + ")")
+            log("分析csv文件" + csv_file + "完毕 (" + str(len(ll)) + "条记录)")
         start_date = start_date + datetime.timedelta(days=-1)
     final = []
     rec_org = {}
@@ -300,9 +285,9 @@ def top_recommend(end_date=datetime.datetime.now().strftime('%Y%m%d'), workingda
     top = min([len(final), const.TOP_REC])
     return [final[0:top], rec_org, rec_details]
 
-def show_stock_details(stock_num_list):
+
+def show_stock_details(stock_num_list, stock_list):
     sr = []
-    stock_list = get_stock_list.get_existing_stock_list()
     for r in stock_num_list:
         temp = []
         temp.append(r)
@@ -322,9 +307,9 @@ def show_stock_details(stock_num_list):
 
 def get_kdjmacd(s):
     results = {}
-    results["Day"] = get_history_data_and_quota(s, "D", getKDJMacdBrandistock, k_list="Day")
-    results["Week"] = get_history_data_and_quota(s, "W", getKDJMacdBrandistock, k_list="Week")
-    results["Month"] = get_history_data_and_quota(s, "M", getKDJMacdBrandistock, k_list="Month")
+    results["日"] = get_history_data_and_quota(s, "D", getKDJMacdBrandistock, k_list="日")
+    results["周"] = get_history_data_and_quota(s, "W", getKDJMacdBrandistock, k_list="周")
+    results["月"] = get_history_data_and_quota(s, "M", getKDJMacdBrandistock, k_list="月")
     return results
 
 
@@ -342,5 +327,5 @@ def show_tushare(s):
         except BaseException as e:
             log(e)
             if k_index is None:
-                log("show_tushare retrying......" + str(i))
+                log("tushare数据获取中......" + str(i))
     output(k_index)

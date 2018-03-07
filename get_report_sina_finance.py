@@ -37,7 +37,7 @@ def get_sina_finance_page(url, html_text, start_date, end_date, stock_list):
         #     os.mkdir(save_path)
         # funcset.write_str_to_file(file_path, data)
     except Exception as e:
-        funcset.log(url + " was crashed")
+        funcset.log(url + "崩溃了")
         funcset.log(e)
     sa = get_stock_list.check_stock_exists_in_paragraph(stock_list, cont, h1.text.strip(), url)
     return sa
@@ -74,7 +74,7 @@ def get_sina_finance(url, html_text, start_date, end_date, stock_list):
             temp_reason = td[1].text.strip()
             ws = ws_base.WS(aa[0]['href'], get_sina_finance_page, stock_list, start_date, end_date, encoding="GBK")
             report = ws.get_data()
-            funcset.log("reading url path: " + aa[0]['href'] + "(" + str(len(report)) + ")")
+            funcset.log("读取URL:" + aa[0]['href'] + "(" + str(len(report)) + ")")
             if temp_date not in final.keys():
                 final[temp_date] = []
             for r in report:
