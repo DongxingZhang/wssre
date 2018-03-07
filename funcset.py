@@ -15,14 +15,14 @@ import ws_base
 
 
 def log(msg):
-    pass
-    # print("wssr: " + msg)
+    write_str_to_file(const.LOG_FILE, "wssr: " + msg, "a")
 
 def output(msg, end='\r'):
     print(msg, end)
 
-def write_str_to_file(file_name, contents):
-    f = open(file_name, 'w')
+
+def write_str_to_file(file_name, contents, mode="w"):
+    f = open(file_name, mode)
     f.write(contents)
     f.close()
 

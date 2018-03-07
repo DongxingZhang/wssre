@@ -25,6 +25,7 @@ WEEK_LIST = [3, 5, 10]
 MONTH_LIST = [3, 6, 12]
 
 TOP_REC = 20
+LOG_FILE = TMP_DIR + + os.sep + 'wssr.log'
 # def write_lastday(ld=None):
 #    if ld is None:
 #        ld = datetime.datetime.now()
