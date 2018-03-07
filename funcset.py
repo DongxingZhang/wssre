@@ -296,10 +296,9 @@ def top_recommend(end_date=datetime.datetime.now().strftime('%Y%m%d'), workingda
             temp.append(v.get_rec_count())
             final.append(tuple(temp))
             rec_org[k] = sorted(v.get_rec(), key=lambda rec: rec[0], reverse=True)
-            if len(final) == const.TOP_REC:
-                break
     final = sorted(final, key=lambda stock_rec: stock_rec[2], reverse=True)
-    return [final, rec_org, rec_details]
+    top = min([len(final), const.TOP_REC])
+    return [final[0:top], rec_org, rec_details]
 
 def show_stock_details(stock_num_list):
     sr = []
