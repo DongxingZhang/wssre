@@ -48,7 +48,7 @@ if __name__ == '__main__':
                 [top_rec, top_rec_org, top_rec_details] = funcset.top_recommend(m[1], int(m[2]))
                 funcset.output("End Date: " + m[1] + "    Working Days:" + str(m[2]))
             funcset.output("")
-            n = 1
+            n = 0
             top_rec.insert(0, ["No.", "StockID", "StockName", "RecCount"])
             for r in top_rec:
                 funcset.output("%-4s\t%-8s\t%-10s\t%-4s\t" % (n, r[0], r[1], str(r[2])))
@@ -67,10 +67,10 @@ if __name__ == '__main__':
             if s not in top_rec_org.keys():
                 funcset.output(s + " is not recommended.")
                 continue
-            n = 1
             funcset.output("Stock ID:" + s + "  Stock Name:" + stock_list[s])
             funcset.output("")
             funcset.output("%-4s\t%-8s\t%-10s\t" % ("No.", "RecDate", "RecOrg"))
+            n = 1
             for v in top_rec_org[s]:
                 funcset.output("%-4s\t%-8s\t%-10s\t" % (n, v[0], v[1]))
                 n += 1
