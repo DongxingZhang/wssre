@@ -29,10 +29,10 @@ class PROCESS(Process):
 
 
 class STOCK_REC:
-    def __init__(self, stock_num, stock_name, stock_rec_count=0):
+    def __init__(self, stock_num, stock_name):
         self.stock_num = stock_num
         self.stock_name = stock_name
-        self.stock_rec_count = stock_rec_count
+        self.stock_rec_count = 0
         self.stock_rec = []
 
     def get_stocknum(self):
@@ -43,9 +43,6 @@ class STOCK_REC:
 
     def get_rec_count(self):
         return self.stock_rec_count
-
-    def add_rec_count(self):
-        self.stock_rec_count = self.stock_rec_count + 1
 
     def get_rec(self):
         return self.stock_rec
@@ -60,8 +57,8 @@ class STOCK_REC:
                 found = True
                 break
         if not found:
-            self.stock_rec.append((stock_rec_date, stock_rec_org))
-        self.stock_rec_count = len(self.stock_rec)
+            self.stock_rec.append(tuple([stock_rec_date, stock_rec_org]))
+            self.stock_rec_count = len(self.stock_rec)
 
     def get_string(self):
         return self.get_stocknum() + "," + self.get_stockname() + "," + str(self.get_rec_count())

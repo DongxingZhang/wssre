@@ -7,7 +7,6 @@ STOCKDATA_DIR = 'stock_data'
 TIMESTAP_DIR = 'timestamp'
 STATISTICS_DIR = 'statistics'
 RECORDS_DIR = 'records'
-TMP_DIR = 'tmp'
 
 STOCK_LIST_CSV = STOCK_DIR + os.sep + 'stock_list.csv'
 ORG_LIST_CSV = STOCK_DIR + os.sep + 'org_list.csv'
@@ -25,7 +24,7 @@ WEEK_LIST = [3, 5, 10]
 MONTH_LIST = [3, 6, 12]
 
 TOP_REC = 20
-LOG_FILE = TMP_DIR + + os.sep + 'wssr.log'
+LOG_FILE = WEBCACHE_DIR + os.sep + 'wssr.log'
 # def write_lastday(ld=None):
 #    if ld is None:
 #        ld = datetime.datetime.now()

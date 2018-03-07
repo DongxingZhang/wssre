@@ -161,28 +161,6 @@ def generate_report_1(url, get_data_func, encoding, start_date, end_date, stock_
         logging.exception(e)
     return get_report_all
 
-def load_all_existing_report(start_date, end_date):
-    report_all = {}
-    cur_day = start_date
-    while cur_day <= end_date:
-        # log(str(cur_day) + " " +  str(end_date))
-        data_string = str(cur_day.year) + "-" + str(cur_day.month).zfill(2) + "-" + str(cur_day.day).zfill(2)
-        file_name = const.REPORT_CSV.replace("DATEYYMMDD", data_string)
-        cur_day = cur_day + datetime.timedelta(days=1)
-        if not os.path.exists(file_name):
-            log(file_name + " doesn't exist.")
-            continue
-        list_array = read_listlist_csv(file_name)
-        for sr in list_array:
-            if not sr[0] in report_all.keys():
-                stock_rec = ws_base.STOCK_REC(sr[0], sr[1], sr[2])
-                report_all[sr[0]] = stock_rec
-            else:
-                report_all[sr[0]].add_rec_count(sr[2])
-                report_all[sr[0]].add_rec_org(sr[3].split(","))
-    return report_all
-
-
 def get_quota(args):
     k_index = args[0]
     time_list = args[1]
@@ -297,6 +275,7 @@ def top_recommend(end_date=datetime.datetime.now().strftime('%Y%m%d'), workingda
             ll = read_listlist_csv(csv_file)
             for l in ll:
                 s = ws_base.STOCK(l)
+                # log(s.get_stockname() + "," + s.get_date() + "," + s.get_organization() + "\r\n")
                 if s.get_stocknum() not in stock_ref.keys():
                     stock_ref[s.get_stocknum()] = ws_base.STOCK_REC(s.get_stocknum(), s.get_stockname())
                 stock_ref[s.get_stocknum()].add_rec(s.get_date(), s.get_organization())
@@ -305,6 +284,7 @@ def top_recommend(end_date=datetime.datetime.now().strftime('%Y%m%d'), workingda
                 else:
                     rec_details[s.get_stocknum()] = list_add_uniqe_tuple(rec_details[s.get_stocknum()],
                                                                          (s.get_reason().strip(), s.get_reason_file()))
+            log("parse the csv " + csv_file + " done (" + str(len(ll)) + ")")
         start_date = start_date + datetime.timedelta(days=-1)
     final = []
     rec_org = {}

@@ -1,20 +1,20 @@
 # coding : UTF-8
 
+import datetime
+
 import const
 import funcset
 import get_report
 import get_stock_list
 
 if __name__ == '__main__':
-    funcset.help()
     top_rec = None
     top_rec_org = None
     top_rec_details = None
     latest_result = None
     stock_list = get_stock_list.get_existing_stock_list()
-    funcset.output("Data initialization is running.")
     get_report.get_report()
-    funcset.output("Data initialization is completed.")
+    funcset.help()
     while True:
         print('>>', end='')
         m = input().strip().lower().split(" ")
@@ -43,9 +43,10 @@ if __name__ == '__main__':
                 continue
             elif len(m) == 1:
                 [top_rec, top_rec_org, top_rec_details] = funcset.top_recommend()
+                funcset.output("End Date: " + datetime.datetime.now().strftime('%Y%m%d') + "    Working Days: 3")
             elif len(m) == 3:
                 [top_rec, top_rec_org, top_rec_details] = funcset.top_recommend(m[1], int(m[2]))
-            funcset.output("End Date: " + m[1] + "    Working Days:" + str(m[2]))
+                funcset.output("End Date: " + m[1] + "    Working Days:" + str(m[2]))
             funcset.output("")
             n = 1
             top_rec.insert(0, ["No.", "StockID", "StockName", "RecCount"])
