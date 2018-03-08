@@ -15,23 +15,11 @@ def get_51pdf(url, html_text, start_date, end_date, stock_list):
         bs = BeautifulSoup(html_text, "html.parser")  # 创建BeautifulSoup对象
         body = bs.body  # 获取body部分
         data = body.find('div', {'class': 'morelist'})  # 找到class为morelist的div
-        # html_context = body.find('div', {'class': 'content_left'})
-        # html_context_date = ""
-        file_path = ""
         table = data.find('table')  # 获取tbody部分
         tr = table.find_all("tr")
         org_list = get_stock_list.get_existing_org_list()
         if len(tr) == 0:
             return [final, True]
-        # if html_context is not None:
-        #     td = tr[0].find_all("td")
-        #     if len(td) == 4:
-        #         html_context = str(html_context).replace("\xa0", "")
-        #         save_path = const.WEBCACHE_DIR + os.sep + td[2].text.strip()
-        #         file_path = funcset.get_webcache_hash_file_name(html_context, td[2].text.strip())
-        #         if not os.path.exists(save_path):
-        #             os.mkdir(save_path)
-        #         funcset.write_str_to_file(file_path, html_context)
         for item in tr:
             td = item.find_all("td")
             if len(td) != 4:
