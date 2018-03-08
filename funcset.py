@@ -14,7 +14,7 @@ import ws_base
 
 
 def log(msg):
-    write_str_to_file(const.LOG_FILE, "WSSR: " + msg, "a")
+    write_str_to_file(const.LOG_FILE, "WSSR: " + msg + "\n", "a")
 
 
 def output(msg, end='\r'):
