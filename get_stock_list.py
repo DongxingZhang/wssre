@@ -1,19 +1,18 @@
 # coding : UTF-8
 
 import csv
-import os
 
 from bs4 import BeautifulSoup
 
 import const
-import funcset
+import wssrdb
 from ws_base import WS, STOCK
 
 
 # funcset.log(sys.getfilesystemencoding())
 
 def get_stock(url, html_text, start_date, end_date, stock_list):
-    final = []
+    final = {}
     bs = BeautifulSoup(html_text, "html.parser")  # 创建BeautifulSoup对象
     body = bs.body  # 获取body部分
     data = body.find('div', {'id': 'quotesearch'})  # 找到id为quotesearch的div
@@ -28,8 +27,10 @@ def get_stock(url, html_text, start_date, end_date, stock_list):
                 if len(vi) == 2:
                     temp.append(vi[1].replace(")", "").strip())
                     temp.append(vi[0].strip())
-                final.append(temp)
-    funcset.write_listlist_csv(const.STOCK_LIST_CSV, 'w', final)
+                final[temp[0]] = temp[1]
+    wssrdb.cleanup_stock()
+    for k, v in final.items():
+        wssrdb.insert_stock([k, v])
     return final
 
 
@@ -37,6 +38,14 @@ def get_stock_list():
     ws = WS('http://quote.eastmoney.com/stock_list.html', get_stock, None, None, None, encoding="GBK")
     stock_list = ws.get_data()
     return stock_list
+
+
+def get_existing_stock_list():
+    stock_list = wssrdb.get_stock()
+    if len(stock_list) < 100:
+        stock_list = get_stock_list()
+    return stock_list
+
 
 def check_stock_exists_in_paragraph(stock_dict, para, title, file_path):
     l = len(para)
@@ -59,18 +68,6 @@ def check_stock_exists_in_paragraph(stock_dict, para, title, file_path):
 
     sr = list({}.fromkeys(sr).keys())
     return sr
-
-def get_existing_stock_list():
-    stock = {}
-    if not os.path.exists(const.STOCK_LIST_CSV):
-        get_stock_list()
-    with open(const.STOCK_LIST_CSV, 'r', errors='ignore', newline='') as f:
-        f_csv = csv.reader(f)
-        for row in f_csv:
-            if row[0] not in stock.keys() and check_valid_stock_num(row[0]):
-                stock[row[0]] = row[1]
-        f.close()
-    return stock
 
 def get_existing_org_list():
     org_list = {}

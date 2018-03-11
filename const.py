@@ -8,6 +8,9 @@ TIMESTAP_DIR = 'timestamp'
 STATISTICS_DIR = 'statistics'
 RECORDS_DIR = 'records'
 TMP_DIR = 'tmp'
+DB_DIR = 'db'
+
+WSSRDB = DB_DIR + os.sep + 'wssre.db'
 
 STOCK_LIST_CSV = STOCK_DIR + os.sep + 'stock_list.csv'
 ORG_LIST_CSV = STOCK_DIR + os.sep + 'org_list.csv'

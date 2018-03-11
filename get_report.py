@@ -2,7 +2,6 @@
 
 import datetime
 
-import const
 import funcset
 import get_report_51pdf
 import get_report_51pdf_buy
@@ -32,7 +31,7 @@ def get_report():
     if today.year != last_day.year or today.month != last_day.month or today.day != last_day.day:
         funcset.output("数据初始化中......")
         records = generate_report(last_day, today)
-        for temp_date, sr in records.items():
-            funcset.write_listlist_csv(const.RECORDS_CSV.replace("DATEYYMMDD", temp_date), 'w', [r.get_array() for r in sr])
+        # for temp_date, sr in records.items():
+        #    funcset.write_listlist_csv(const.RECORDS_CSV.replace("DATEYYMMDD", temp_date), 'w', [r.get_array() for r in sr])
         funcset.write_lastday(today)
         funcset.output("数据初始化完毕。")
