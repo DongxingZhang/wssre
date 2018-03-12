@@ -1,36 +1,34 @@
 # coding : UTF-8
 
-import csv
-
 from bs4 import BeautifulSoup
 
-import const
+import funcset
 import wssrdb
-from ws_base import WS, STOCK
+from ws_base import WS, STOCK_RECORD
 
-
-# funcset.log(sys.getfilesystemencoding())
 
 def get_stock(url, html_text, start_date, end_date, stock_list):
     final = {}
-    bs = BeautifulSoup(html_text, "html.parser")  # 创建BeautifulSoup对象
-    body = bs.body  # 获取body部分
-    data = body.find('div', {'id': 'quotesearch'})  # 找到id为quotesearch的div
-    ul = data.find_all('ul')  # 获取ul部分
-    for site in ul:
-        li = site.find_all('li')  # 获取所有的li
-        for stock in li:
-            a = stock.find_all("a")
-            for valid_item in a:
-                temp = []
-                vi = valid_item.string.split("(")
-                if len(vi) == 2:
-                    temp.append(vi[1].replace(")", "").strip())
-                    temp.append(vi[0].strip())
-                final[temp[0]] = temp[1]
-    wssrdb.cleanup_stock()
-    for k, v in final.items():
-        wssrdb.insert_stock([k, v])
+    try:
+        bs = BeautifulSoup(html_text, "html.parser")  # 创建BeautifulSoup对象
+        body = bs.body  # 获取body部分
+        data = body.find('div', {'id': 'quotesearch'})  # 找到id为quotesearch的div
+        ul = data.find_all('ul')  # 获取ul部分
+        for site in ul:
+            li = site.find_all('li')  # 获取所有的li
+            for stock in li:
+                a = stock.find_all("a")
+                for valid_item in a:
+                    temp = []
+                    vi = valid_item.string.split("(")
+                    if len(vi) == 2:
+                        temp.append(vi[1].replace(")", "").strip())
+                        temp.append(vi[0].strip())
+                    final[temp[0]] = temp[1]
+        wssrdb.cleanup_stock()
+        wssrdb.insert_stock(final)
+    except Exception as e:
+        funcset.log("Error happened " + str(e))
     return final
 
 
@@ -46,6 +44,9 @@ def get_existing_stock_list():
         stock_list = get_stock_list()
     return stock_list
 
+
+def get_existing_org_list():
+    return wssrdb.get_org()
 
 def check_stock_exists_in_paragraph(stock_dict, para, title, file_path):
     l = len(para)
@@ -69,28 +70,20 @@ def check_stock_exists_in_paragraph(stock_dict, para, title, file_path):
     sr = list({}.fromkeys(sr).keys())
     return sr
 
-def get_existing_org_list():
-    org_list = {}
-    with open(const.ORG_LIST_CSV, 'r', errors='ignore', newline='') as f:
-        f_csv = csv.reader(f)
-        for row in f_csv:
-            if len(row) == 2:
-                org_list[row[0]] = row[1]
-        f.close()
-    return org_list
 
-def check_valid_stock_num(stocknum):
-    return stocknum.find("60") == 0 or stocknum.find("30") == 0 or stocknum.find("00") == 0
+# def check_valid_stock_num(stocknum):
+#    return stocknum.find("60") == 0 or stocknum.find("30") == 0 or stocknum.find("00") == 0
 
-def check_stock_exists_in_string(stock_dict, string, file_path):
+def check_stock_exists_in_string(stock_dict, string, url):
     s = []
     for k, v in stock_dict.items():
         if string.find(k) > -1 or string.find(v) > -1:
-            s.append(STOCK(["", "", k, v, string, file_path, "", ""]))
+            s.append(STOCK_RECORD(["", k, 0, string, url, ""]))
     return s
 
-def check_valid_org_num(org_list, string):
-    for id, org in org_list.items():
+
+def check_valid_org_num(org_dict, string):
+    for id, org in org_dict.items():
         if string.find(org) > -1 or org.find(string) > -1:
             return org
     return None

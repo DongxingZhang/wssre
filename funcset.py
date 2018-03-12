@@ -2,9 +2,7 @@
 
 import csv
 import datetime
-import logging
 import os
-import traceback
 
 import tushare as ts
 
@@ -14,7 +12,8 @@ import ws_base
 
 
 def log(msg):
-    write_str_to_file(const.LOG_FILE, "WSSR: " + msg + "\n", "a")
+    print(msg)
+    # write_str_to_file(const.LOG_FILE, "WSSR: " + msg + "\n", "a")
 
 
 def output(msg, end='\r'):
@@ -135,24 +134,20 @@ def merge_report_records(get_data_all, get_data):
             get_data_all[temp_date].append(r)
     return get_data_all
 
-def generate_report_1(url, get_data_func, encoding, start_date, end_date, stock_list):
-    get_report_all = {}
-    i = 1
+
+def generate_report_1(url, get_data_func, encoding, start_date, end_date, stock_dict, org_dict):
     stop = False
+    pageno = 1
     try:
         while not stop:
-            newurl = url.replace("PAGENUMBER", str(i))
-            ws = ws_base.WS(newurl, get_data_func, start_date, end_date, stock_list, encoding)
+            newurl = url.replace("PAGENUMBER", str(pageno))
+            ws = ws_base.WS(newurl, get_data_func, start_date, end_date, stock_dict, org_dict, encoding)
             [get_report, stop] = ws.get_data()
             log("读取URL:" + newurl + " with " + encoding + "(" + str(
-                sum([len(v) for v in get_report.values()])) + ")")
-            get_report_all = merge_report_records(get_report_all, get_report)
-            i = i + 1
+                len(get_report)) + ")")
+            pageno += 1
     except BaseException as e:
-        msg = traceback.format_exc()
-        log(msg)
-        logging.exception(e)
-    return get_report_all
+        log(e)
 
 def get_quota(args):
     k_index = args[0]
@@ -260,7 +255,7 @@ def top_recommend(end_date=datetime.datetime.now().strftime('%Y%m%d'), workingda
             log("分析csv文件" + csv_file)
             ll = read_listlist_csv(csv_file)
             for l in ll:
-                s = ws_base.STOCK(l)
+                s = ws_base.STOCK_RECORD(l)
                 if s.get_stocknum() not in stock_ref.keys():
                     stock_ref[s.get_stocknum()] = ws_base.STOCK_REC(s.get_stocknum(), s.get_stockname())
                 stock_ref[s.get_stocknum()].add_rec(s.get_date(), s.get_organization())

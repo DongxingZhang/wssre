@@ -64,93 +64,69 @@ class STOCK_REC:
         return self.get_stocknum() + "," + self.get_stockname() + "," + str(self.get_rec_count())
 
 
-class STOCK:
+class STOCK_RECORD:
     def __init__(self, list):
         self.date = list[0]
-        self.organization = list[1]
-        self.stocknum = list[2]
-        self.stockname = list[3]
-        self.reason = list[4]
-        self.reason_file = list[5]
-        self.sfrom = list[6]
-        self.type = list[7]
-
-    # def __init__(self, date, organization, stocknum, stockname, reason, reason_file, sfrom="", type=""):
-    #    self.date = date
-    #    self.organization = organization
-    #    self.stocknum = stocknum
-    #    self.stockname = stockname
-    #    self.reason = reason
-    #    self.reason_file = reason_file
-    #    self.sfrom = sfrom
-    #    self.type = type
+        self.stockid = list[1]
+        self.orgid = list[2]
+        self.reason = list[3]
+        self.url = list[4]
+        self.source = list[5]
 
     def get_date(self):
         return self.date
 
-    def get_organization(self):
-        return self.organization
+    def get_stockid(self):
+        return self.stockid
 
-    def get_stocknum(self):
-        return self.stocknum
-
-    def get_stockname(self):
-        return self.stockname
+    def get_orgid(self):
+        return self.orgid
 
     def get_reason(self):
         return self.reason
 
-    def get_reason_file(self):
-        return self.reason_file
+    def get_url(self):
+        return self.url
 
-    def get_from(self):
-        return self.sfrom
-
-    def get_type(self):
-        return self.type
+    def get_source(self):
+        return self.source
 
     def set_date(self, temp_date):
         self.date = temp_date
 
-    def set_organization(self, temp_organization):
-        self.organization = temp_organization
+    def set_orgid(self, orgid):
+        self.orgid = orgid
 
-    def set_stocknum(self, temp_stocknum):
-        self.stocknum = temp_stocknum
+    def set_stockid(self, stockid):
+        self.stockid = stockid
 
-    def set_stockname(self, temp_stockname):
-        self.stockname = temp_stockname
+    def set_reason(self, reason):
+        self.reason = reason
 
-    def set_reason(self, temp_reason):
-        self.reason = temp_reason
+    def set_url(self, url):
+        self.url = url
 
-    def set_reason_file(self, temp_reason_file):
-        self.reason_file = temp_reason_file
-
-    def set_from(self, temp_from):
-        self.sfrom = temp_from
-
-    def set_type(self, temp_type):
-        self.type = temp_type
+    def set_source(self, source):
+        self.source = source
 
     def get_string(self):
-        return self.get_date() + "," + self.get_organization() + "," + self.get_stocknum() + "," + self.get_stockname() + "," + self.get_reason() + "," + self.get_reason_file() + "," + self.get_from() + "," + self.get_type()
+        return self.get_date() + "," + self.get_stockid() + "," + self.get_orgid() + "," + self.get_reason() + "," + self.get_url() + "," + self.get_source()
 
     def get_array(self):
-        return (self.get_date(), self.get_organization(), self.get_stocknum(), self.get_stockname(), self.get_reason(),
-                self.get_reason_file(),
-                self.get_from(), self.get_type())
+        return (self.get_date(), self.get_stockid(), self.get_orgid(), self.get_reason(), self.get_reason(),
+                self.get_url(), self.get_source())
 
 
 class WS:
-    def __init__(self, url, get_data_func, stock_list=None, start_date=datetime.datetime.now(),
-                 end_date=datetime.datetime.now(), encoding="utf-8"):
+    def __init__(self, url, get_data_func, start_date=datetime.datetime.now(),
+                 end_date=datetime.datetime.now(), stock_dict=None, org_dict=None, encoding="utf-8"):
         self.url = url
         self.get_data_func = get_data_func
         self.get_content(encoding)
         self.start_date = start_date
         self.end_date = end_date
-        self.stock_list = stock_list
+        self.stock_dict = stock_dict
+        self.org_dict = org_dict
 
     def get_content(self, encoding, data=None):
         header = {
@@ -200,4 +176,4 @@ class WS:
         self.html = rep.text
 
     def get_data(self):
-        return self.get_data_func(self.url, self.html, self.start_date, self.end_date, self.stock_list)
+        return self.get_data_func(self.url, self.html, self.start_date, self.end_date, self.stock_dict, self.org_dict)
