@@ -128,15 +128,15 @@ def get_orgid(org_name):
     return orgid
 
 
-def insert_stock_rec(stock_records_dict):
+def insert_stock_rec(stock_records_list):
     conn = opendb()
     cur = conn.cursor()
     sql = ""
     try:
         sql = "INSERT INTO RECORDS VALUES (?,?,?,?,?,?)"
-        for date, sr in stock_records_dict.items():
+        for sr in stock_records_list:
             cur.execute(sql, (
-                date, sr.get_stocknum(), sr.get_organization(), sr.get_reason(), sr.get_reason_file(), sr.get_from()))
+                sr.get_date(), sr.get_stockid(), sr.get_orgid(), sr.get_reason(), sr.get_url(), sr.get_source()))
         conn.commit()
     except Exception as e:
         conn.rollback()

@@ -51,7 +51,6 @@ def get_51pdf(url, html_text, start_date, end_date, stock_dict, org_dict):
                         s.set_date(temp_date)
                         s.set_source("51pdf")
                         final.append(s)
-        print(final)
         wssrdb.insert_stock_rec(final)
     except Exception as e:
         funcset.log(url + "崩溃了")

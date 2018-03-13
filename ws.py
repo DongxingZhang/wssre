@@ -17,8 +17,9 @@ if __name__ == '__main__':
     parser.add_argument('--function', type=str, default=None)
     args = parser.parse_args()
     if args.function is None:
-        stock_list = get_stock_list.get_existing_stock_list()
-        get_report.get_report()
+        stock_dict = get_stock_list.get_existing_stock_list()
+        org_dict = get_stock_list.get_existing_org_list()
+        get_report.get_report(stock_dict, org_dict)
         funcset.help()
         while True:
             print('>>', end='')
@@ -73,7 +74,7 @@ if __name__ == '__main__':
                 if s not in top_rec_org.keys():
                     funcset.output(s + "没有被推荐.")
                     continue
-                funcset.output("股票编号:" + s + "  股票名称:" + stock_list[s])
+                funcset.output("股票编号:" + s + "  股票名称:" + stock_dict[s])
                 funcset.output("")
                 funcset.output("%-4s\t%-8s\t%-10s\t" % ("编号", "日期", "机构"))
                 n = 1
@@ -93,7 +94,7 @@ if __name__ == '__main__':
                 if s not in top_rec_details.keys():
                     funcset.output(s + "没有被推荐。")
                     continue
-                funcset.output("股票编号:" + s + "  股票名称:" + stock_list[s])
+                funcset.output("股票编号:" + s + "  股票名称:" + stock_dict[s])
                 funcset.output("")
                 for v in top_rec_details[s]:
                     funcset.output("-----------------------------------------------------------")
@@ -116,7 +117,7 @@ if __name__ == '__main__':
                     sl = [v[0] for v in top_rec]
                     rec = {v[0]: v[2] for v in top_rec}
                 funcset.output("=====================STOCK INFO ===========================")
-                sr = funcset.show_stock_details(sl, stock_list)
+                sr = funcset.show_stock_details(sl, stock_dict)
                 funcset.output(
                     "%-8s\t%-8s\t%-8s\t%-8s\t%-8s\t%-8s\t%-8s\t%-8s\t %-8s\t%-8s\t%-8s\t%-8s\t%-8s\t%-8s" % (
                         "股票编号", "股票名称", "次数", "市盈率", "市净率", "涨跌(3天)", "涨跌(5天)", "涨跌(10天)",
