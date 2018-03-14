@@ -48,6 +48,22 @@ def get_existing_stock_list():
 def get_existing_org_list():
     return wssrdb.get_org()
 
+
+def merge_stock_records(stock_record1, stock_record2):
+    sr = stock_record1.copy()
+    for sr2 in stock_record2:
+        found = False
+        for sr1 in stock_record1:
+            if sr1.get_date() == sr2.get_date() and sr1.get_stockid() == sr2.get_stockid() and \
+                    sr1.get_orgid() == sr2.get_orgid() and sr1.get_reason() == sr2.get_reason() and \
+                    sr1.get_url() == sr2.get_url():
+                found = True
+                break
+        if not found:
+            sr.append(sr2)
+    return sr
+
+
 def check_stock_exists_in_paragraph(stock_dict, para, title, file_path):
     l = len(para)
     sr = []
@@ -65,19 +81,15 @@ def check_stock_exists_in_paragraph(stock_dict, para, title, file_path):
     for p in para_array:
         for r in rec:
             if p.find(r) > -1:
-                sr = sr + check_stock_exists_in_string(stock_dict, p, file_path)
-
-    sr = list({}.fromkeys(sr).keys())
+                sr = merge_stock_records(sr, check_stock_exists_in_string(stock_dict, p, file_path))
     return sr
-
-
-# def check_valid_stock_num(stocknum):
-#    return stocknum.find("60") == 0 or stocknum.find("30") == 0 or stocknum.find("00") == 0
 
 def check_stock_exists_in_string(stock_dict, string, url):
     s = []
     for k, v in stock_dict.items():
         if string.find(k) > -1 or string.find(v) > -1:
+            if len(string) > 5000:
+                string = string[0:5000]
             s.append(STOCK_RECORD(["", k, 0, string, url, ""]))
     return s
 
@@ -85,7 +97,7 @@ def check_stock_exists_in_string(stock_dict, string, url):
 def check_valid_org_num(org_dict, string):
     for id, org in org_dict.items():
         if string.find(org) > -1 or org.find(string) > -1:
-            return org
+            return id
     return None
 
 if __name__ == '__main__':

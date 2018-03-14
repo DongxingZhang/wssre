@@ -13,12 +13,11 @@ def get_51pdf(url, html_text, start_date, end_date, stock_dict, org_dict):
     final = []
     stop = False
     try:
-        bs = BeautifulSoup(html_text, "html.parser")  # 创建BeautifulSoup对象
-        body = bs.body  # 获取body部分
-        data = body.find('div', {'class': 'morelist'})  # 找到class为morelist的div
-        table = data.find('table')  # 获取tbody部分
+        bs = BeautifulSoup(html_text, "html.parser")
+        body = bs.body
+        data = body.find('div', {'class': 'morelist'})
+        table = data.find('table')
         tr = table.find_all("tr")
-        org_list = get_stock_list.get_existing_org_list()
         if len(tr) == 0:
             return True
         for item in tr:
@@ -33,25 +32,26 @@ def get_51pdf(url, html_text, start_date, end_date, stock_dict, org_dict):
                 if len(aarray) == 1:
                     funcset.log("something wrong on: " + aa.text)
                     continue
-                temp_organization = aarray[0].strip()
-                temp_organization = get_stock_list.check_valid_org_num(org_dict, temp_organization)
-                if temp_organization is None:
-                    temp_organization = aarray[0].strip()
-                    funcset.log("unsupported organization: " + temp_organization)
-                    wssrdb.insert_org(temp_organization)
-                sa = get_stock_list.check_stock_exists_in_string(stock_dict, aarray[1].strip(), url)
+                sa = get_stock_list.check_stock_exists_in_string(stock_dict, aarray[1].strip(),
+                                                                 "http://www.51pdf.cn" + aa["href"])
                 if len(sa) == 0:
                     continue
-                orgid = wssrdb.get_orgid(temp_organization)
+                organization = aarray[0].strip()
+                orgid = get_stock_list.check_valid_org_num(org_dict, organization)
+                if orgid is None:
+                    funcset.log("Add new org: " + organization)
+                    wssrdb.insert_org(organization)
+                    orgid = wssrdb.get_orgid(organization)
+                    org_dict[orgid] = organization
                 report_date = datetime.datetime.strptime(temp_date, "%Y-%m-%d")
                 stop = report_date < start_date
-                if report_date >= start_date and report_date <= end_date:
+                if end_date >= report_date >= start_date:
                     for s in sa:
                         s.set_orgid(orgid)
                         s.set_date(temp_date)
-                        s.set_source("51pdf")
+                        s.set_source("51pdf stock")
                         final.append(s)
-        wssrdb.insert_stock_rec(final)
+        wssrdb.insert_stock_records(final)
     except Exception as e:
         funcset.log(url + "崩溃了")
         funcset.log(e)
@@ -59,5 +59,5 @@ def get_51pdf(url, html_text, start_date, end_date, stock_dict, org_dict):
 
 
 def generate_report(start_date, end_date, stock_dict, org_dict):
-    return funcset.generate_report_1("http://www.51pdf.com.cn/report_gg_pPAGENUMBER/", get_51pdf, "utf-8", start_date,
+    return funcset.generate_report_1("http://www.51pdf.cn/report_gg_pPAGENUMBER/", get_51pdf, "utf-8", start_date,
                                      end_date, stock_dict, org_dict)

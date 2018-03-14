@@ -12,8 +12,7 @@ import ws_base
 
 
 def log(msg):
-    print(msg)
-    # write_str_to_file(const.LOG_FILE, "WSSR: " + msg + "\n", "a")
+    write_str_to_file(const.LOG_FILE, "WSSR: " + msg + "\n", "a")
 
 
 def output(msg, end='\r'):
@@ -138,16 +137,17 @@ def merge_report_records(get_data_all, get_data):
 def generate_report_1(url, get_data_func, encoding, start_date, end_date, stock_dict, org_dict):
     stop = False
     pageno = 1
-    try:
-        while not stop:
-            newurl = url.replace("PAGENUMBER", str(pageno))
-            ws = ws_base.WS(newurl, get_data_func, start_date, end_date, stock_dict, org_dict, encoding)
-            [get_report, stop] = ws.get_data()
-            log("读取URL:" + newurl + " with " + encoding + "(" + str(
-                len(get_report)) + ")")
-            pageno += 1
-    except BaseException as e:
-        log(e)
+    total_count = 0
+    while not stop:
+        newurl = url.replace("PAGENUMBER", str(pageno))
+        ws = ws_base.WS(newurl, get_data_func, start_date, end_date, stock_dict, org_dict, encoding)
+        [get_report, stop] = ws.get_data()
+        log("读取URL:" + newurl + " with " + encoding + "(" + str(
+            len(get_report)) + ")")
+        pageno += 1
+        total_count = len(get_report)
+    return total_count
+
 
 def get_quota(args):
     k_index = args[0]

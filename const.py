@@ -1,11 +1,8 @@
 import os
 
-WEBCACHE_DIR = 'webcache'
 REPORT_DIR = 'report'
 STOCK_DIR = 'stock'
-STOCKDATA_DIR = 'stock_data'
 TIMESTAP_DIR = 'timestamp'
-STATISTICS_DIR = 'statistics'
 RECORDS_DIR = 'records'
 TMP_DIR = 'tmp'
 DB_DIR = 'db'
@@ -15,13 +12,10 @@ WSSRDB = DB_DIR + os.sep + 'wssre.db'
 STOCK_LIST_CSV = STOCK_DIR + os.sep + 'stock_list.csv'
 ORG_LIST_CSV = STOCK_DIR + os.sep + 'org_list.csv'
 
-WEBCACHE_CSV = WEBCACHE_DIR + os.sep + "DATEYYMMDD" + os.sep + 'webcache-DATEYYMMDDHHMMDD.html'
 REPORT_CSV = REPORT_DIR + os.sep + 'report-DATEYYMMDD.csv'
 RECORDS_CSV = RECORDS_DIR + os.sep + 'reocrds-DATEYYMMDD.csv'
-STA_REC_LAST_DAYS_CSV = STATISTICS_DIR + os.sep + "sta-rec-last-DATEYYMMDD-DDdays.csv"
 
 LAST_DAY_CSV = TIMESTAP_DIR + os.sep + 'last_day.csv'
-LAST_DAY_CSV_DD = TIMESTAP_DIR + os.sep + 'last_day_DD.csv'
 
 DAY_LIST = [3, 5, 10]
 WEEK_LIST = [3, 5, 10]

@@ -69,7 +69,6 @@ def insert_org(orgname):
     conn = opendb()
     cur = conn.cursor()
     sql = ""
-    print(orgname)
     try:
         sql = "INSERT INTO ORG(ORGNAME) VALUES (?)"
         cur.execute(sql, (orgname,))
@@ -128,15 +127,33 @@ def get_orgid(org_name):
     return orgid
 
 
-def insert_stock_rec(stock_records_list):
+def insert_stock_records(stock_records_list):
     conn = opendb()
     cur = conn.cursor()
     sql = ""
     try:
         sql = "INSERT INTO RECORDS VALUES (?,?,?,?,?,?)"
         for sr in stock_records_list:
+            #        print(sr.get_string())
             cur.execute(sql, (
                 sr.get_date(), sr.get_stockid(), sr.get_orgid(), sr.get_reason(), sr.get_url(), sr.get_source()))
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+        funcset.output("Execution is failed: " + sql)
+        funcset.log(e)
+    finally:
+        cur.close()
+        conn.close()
+
+
+def delete_stock_records(start_date, end_date):
+    conn = opendb()
+    cur = conn.cursor()
+    sql = ""
+    try:
+        sql = "DELETE FROM RECORDS WHERE RECDATE >= ? AND RECDATE <= ?"
+        cur.execute(sql, (start_date.strftime("%Y-%m-%d"), end_date.strftime("%Y-%m-%d")))
         conn.commit()
     except Exception as e:
         conn.rollback()

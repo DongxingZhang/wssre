@@ -110,7 +110,8 @@ class STOCK_RECORD:
         self.source = source
 
     def get_string(self):
-        return self.get_date() + "," + self.get_stockid() + "," + self.get_orgid() + "," + self.get_reason() + "," + self.get_url() + "," + self.get_source()
+        return self.get_date() + "," + self.get_stockid() + "," + str(
+            self.get_orgid()) + "," + self.get_reason() + "," + self.get_url() + "," + self.get_source()
 
     def get_array(self):
         return (self.get_date(), self.get_stockid(), self.get_orgid(), self.get_reason(), self.get_reason(),
