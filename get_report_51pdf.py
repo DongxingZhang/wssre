@@ -19,7 +19,7 @@ def get_51pdf(url, html_text, start_date, end_date, stock_dict, org_dict):
         table = data.find('table')
         tr = table.find_all("tr")
         if len(tr) == 0:
-            return True
+            return [final, True]
         for item in tr:
             td = item.find_all("td")
             if len(td) != 4:

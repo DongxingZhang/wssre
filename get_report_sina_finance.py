@@ -23,7 +23,6 @@ def get_sina_finance_page(url, html_text, start_date, end_date, stock_dict, org_
         title = body.find('div', {'class': 'content'})
         h1 = title.find("h1")
         cont = pa.text.replace(u'\xa0', u' ').strip()
-        creab = body.find('div', {'class': 'creab'})
         sa = get_stock_list.check_stock_exists_in_paragraph(stock_dict, cont, h1.text.strip(), url)
     except Exception as e:
         funcset.log(url + "崩溃了")
