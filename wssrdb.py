@@ -128,23 +128,22 @@ def get_orgid(org_name):
 
 
 def insert_stock_records(stock_records_list):
-    conn = opendb()
-    cur = conn.cursor()
-    sql = ""
-    try:
-        sql = "INSERT INTO RECORDS VALUES (?,?,?,?,?,?)"
-        for sr in stock_records_list:
-            #        print(sr.get_string())
+    for sr in stock_records_list:
+        conn = opendb()
+        cur = conn.cursor()
+        sql = ""
+        try:
+            sql = "INSERT INTO RECORDS VALUES (?,?,?,?,?,?)"
             cur.execute(sql, (
                 sr.get_date(), sr.get_stockid(), sr.get_orgid(), sr.get_reason(), sr.get_url(), sr.get_source()))
-        conn.commit()
-    except Exception as e:
-        conn.rollback()
-        funcset.output("Execution is failed: " + sql)
-        funcset.log(e)
-    finally:
-        cur.close()
-        conn.close()
+            conn.commit()
+        except Exception as e:
+            conn.rollback()
+            funcset.output("Execution is failed: " + sql)
+            funcset.log(e)
+        finally:
+            cur.close()
+            conn.close()
 
 
 def delete_stock_records(start_date, end_date):
