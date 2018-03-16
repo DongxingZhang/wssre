@@ -213,6 +213,7 @@ def help():
     output("show [股票代码,如000001]: 打印来自tushare的k线数据")
     output("save  [文件路径]: 保存最后的结果到csv文件。")
     output("settoprec  [top推荐股票数量]: 设置top推荐股票数量")
+    output("trend [股票代码,如000001]: 输出股票的推荐趋势")
     output("===========================================================")
 
 def list_add_uniqe_tuple(list, tuple):
@@ -282,3 +283,7 @@ def show_tushare(s):
             if k_index is None:
                 log("tushare数据获取中......" + str(i))
     output(k_index)
+
+
+def show_trend(s):
+    pass
