@@ -163,8 +163,8 @@ def delete_stock_records(start_date, end_date):
         conn.close()
 
 
-def top_recommend(start_date, end_date, top_count):
-    top_dict = {}
+def top_recommend(stock_dict, start_date, end_date, top_count):
+    top_list = []
     conn = opendb()
     cur = conn.cursor()
     sql = ""
@@ -173,7 +173,7 @@ def top_recommend(start_date, end_date, top_count):
         results = cur.execute(sql, (start_date.strftime("%Y-%m-%d"), end_date.strftime("%Y-%m-%d"), top_count))
         all = results.fetchall()
         for r in all:
-            top_dict[r[0]] = r[1]
+            top_list.append((r[0], stock_dict[r[0]], r[1]))
         conn.commit()
     except Exception as e:
         conn.rollback()
@@ -182,4 +182,28 @@ def top_recommend(start_date, end_date, top_count):
     finally:
         cur.close()
         conn.close()
-    return top_dict
+    return top_list
+
+
+def top_recommend_stock_org(org_dict, start_date, end_date):
+    top_stock_org_dict = {}
+    conn = opendb()
+    cur = conn.cursor()
+    sql = ""
+    try:
+        sql = "SELECT STOCKID, RECDATE, ORGID FROM (SELECT * FROM STOCK_ORG_RECORDS WHERE RECDATE >= ? AND RECDATE <= ?) GROUP BY STOCKID, RECDATE, ORGID ORDER BY STOCKID, RECDATE"
+        results = cur.execute(sql, (start_date.strftime("%Y-%m-%d"), end_date.strftime("%Y-%m-%d")))
+        all = results.fetchall()
+        for r in all:
+            if r[0] not in top_stock_org_dict.keys():
+                top_stock_org_dict[r[0]] = []
+            top_stock_org_dict[r[0]].append((r[1], org_dict[r[2]]))
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+        funcset.log("Execution is failed: " + sql)
+        funcset.log(e)
+    finally:
+        cur.close()
+        conn.close()
+    return top_stock_org_dict

@@ -18,7 +18,6 @@ if __name__ == '__main__':
     if args.function is None:
         top_rec = None
         top_rec_org = None
-        top_rec_details = None
         latest_result = None
         funcset.help()
         while True:
@@ -49,10 +48,10 @@ if __name__ == '__main__':
                     funcset.output("     开始往前给定的工作日时间内推荐次数最多的股票列表")
                     continue
                 elif len(m) == 1:
-                    top_rec = funcset.top_recommend(stock_dict)
+                    [top_rec, top_rec_org] = funcset.top_recommend(stock_dict, org_dict)
                     funcset.output("结束日期: " + datetime.datetime.now().strftime('%Y%m%d') + "  工作日: 3")
                 elif len(m) == 3:
-                    top_rec = funcset.top_recommend(stock_dict, m[1], int(m[2]))
+                    [top_rec, top_rec_org] = funcset.top_recommend(stock_dict, org_dict, m[1], int(m[2]))
                     funcset.output("结束日期: " + m[1] + "    工作日:" + str(m[2]))
                 funcset.output("")
                 n = 1
@@ -70,7 +69,7 @@ if __name__ == '__main__':
                     continue
                 s = m[1].strip()
                 if top_rec_org is None:
-                    [top_rec, top_rec_org, top_rec_details] = funcset.top_recommend(stock_dict)
+                    [top_rec, top_rec_org] = funcset.top_recommend(stock_dict, org_dict)
                 if s not in top_rec_org.keys():
                     funcset.output(s + "没有被推荐.")
                     continue
@@ -90,7 +89,7 @@ if __name__ == '__main__':
                     continue
                 s = m[1].strip()
                 if top_rec_org is None:
-                    [top_rec, top_rec_org, top_rec_details] = funcset.top_recommend(stock_dict)
+                    [top_rec, top_rec_org, top_rec_details] = funcset.top_recommend(stock_dict, org_dict)
                 if s not in top_rec_details.keys():
                     funcset.output(s + "没有被推荐。")
                     continue
