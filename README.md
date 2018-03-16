@@ -1,6 +1,6 @@
 # wssr
 
-1. instlal following plugins 
+1. install mandatory plugins 
 
 pip install setuptools
 
@@ -23,6 +23,8 @@ pip install lxml
 pip install pandas
 
 pip install tushare
+
+pip install matplotlib
 
 2. python ws.py
 
