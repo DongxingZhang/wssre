@@ -125,14 +125,6 @@ def read_listlist_csv(filename):
         f.close()
     return listlist
 
-def merge_report_records(get_data_all, get_data):
-    for temp_date, stock_array in get_data.items():
-        for r in stock_array:
-            if temp_date not in get_data_all.keys():
-                get_data_all[temp_date] = []
-            get_data_all[temp_date].append(r)
-    return get_data_all
-
 
 def generate_report_1(url, get_data_func, encoding, start_date, end_date, stock_dict, org_dict):
     stop = False
