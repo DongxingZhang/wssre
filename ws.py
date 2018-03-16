@@ -165,7 +165,7 @@ if __name__ == '__main__':
                 if len(m) != 2 or len(m) != 1:
                     funcset.output("settoprec  [top推荐股票数量]: 设置top推荐股票数量")
                     continue
-                if len(m) != 2:
+                if len(m) == 2:
                     const.TOP_REC = int(m[1].strip())
                 print("当前为" + str(const.TOP_REC))
             elif m[0] == "last":
