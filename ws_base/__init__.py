@@ -27,43 +27,6 @@ class PROCESS(Process):
     def get_running(self):
         return self.running
 
-
-class STOCK_REC:
-    def __init__(self, stock_num, stock_name):
-        self.stock_num = stock_num
-        self.stock_name = stock_name
-        self.stock_rec_count = 0
-        self.stock_rec = []
-
-    def get_stocknum(self):
-        return self.stock_num
-
-    def get_stockname(self):
-        return self.stock_name
-
-    def get_rec_count(self):
-        return self.stock_rec_count
-
-    def get_rec(self):
-        return self.stock_rec
-
-    def set_rec_count(self, stock_rec_count):
-        self.stock_rec_count = stock_rec_count
-
-    def add_rec(self, stock_rec_date, stock_rec_org):
-        found = False
-        for s in self.stock_rec:
-            if s[0] == stock_rec_date and (s[1].find(stock_rec_org) >= 0 or stock_rec_org.find(s[1]) >= 0):
-                found = True
-                break
-        if not found:
-            self.stock_rec.append(tuple([stock_rec_date, stock_rec_org]))
-            self.stock_rec_count = len(self.stock_rec)
-
-    def get_string(self):
-        return self.get_stocknum() + "," + self.get_stockname() + "," + str(self.get_rec_count())
-
-
 class STOCK_RECORD:
     def __init__(self, list):
         self.date = list[0]

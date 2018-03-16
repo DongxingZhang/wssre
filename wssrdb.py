@@ -161,3 +161,25 @@ def delete_stock_records(start_date, end_date):
     finally:
         cur.close()
         conn.close()
+
+
+def top_recommend(start_date, end_date, top_count):
+    top_list = []
+    conn = opendb()
+    cur = conn.cursor()
+    sql = ""
+    try:
+        sql = "SELECT STOCKID, SUM(RECCOUNT) RC FROM (SELECT * FROM STOCK_REC WHERE RECDATE >= ? AND RECDATE <= ?) GROUP BY STOCKID ORDER BY RC DESC  LIMIT ?"
+        results = cur.execute(sql, (start_date.strftime("%Y-%m-%d"), end_date.strftime("%Y-%m-%d"), top_count))
+        all = results.fetchall()
+        for r in all:
+            top_list.append(r)
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+        funcset.log("Execution is failed: " + sql)
+        funcset.log(e)
+    finally:
+        cur.close()
+        conn.close()
+    return top_list

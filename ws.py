@@ -39,7 +39,7 @@ if __name__ == '__main__':
             elif m[0] == "getstock" or m[0] == "gs":
                 funcset.output("==================股票列表==================================")
                 funcset.output("股票列表更新中......")
-                sl = get_stock_list.get_stock_list()
+                get_stock_list.get_stock_list()
                 funcset.output("股票列表更新完成。")
                 funcset.output("===========================================================")
             elif m[0] == "top" or m[0] == "t":
@@ -49,10 +49,10 @@ if __name__ == '__main__':
                     funcset.output("     开始往前给定的工作日时间内推荐次数最多的股票列表")
                     continue
                 elif len(m) == 1:
-                    [top_rec, top_rec_org, top_rec_details] = funcset.top_recommend()
+                    top_rec = funcset.top_recommend(stock_dict)
                     funcset.output("结束日期: " + datetime.datetime.now().strftime('%Y%m%d') + "  工作日: 3")
                 elif len(m) == 3:
-                    [top_rec, top_rec_org, top_rec_details] = funcset.top_recommend(m[1], int(m[2]))
+                    top_rec = funcset.top_recommend(stock_dict, m[1], int(m[2]))
                     funcset.output("结束日期: " + m[1] + "    工作日:" + str(m[2]))
                 funcset.output("")
                 n = 1
@@ -70,7 +70,7 @@ if __name__ == '__main__':
                     continue
                 s = m[1].strip()
                 if top_rec_org is None:
-                    [top_rec, top_rec_org, top_rec_details] = funcset.top_recommend()
+                    [top_rec, top_rec_org, top_rec_details] = funcset.top_recommend(stock_dict)
                 if s not in top_rec_org.keys():
                     funcset.output(s + "没有被推荐.")
                     continue
@@ -90,7 +90,7 @@ if __name__ == '__main__':
                     continue
                 s = m[1].strip()
                 if top_rec_org is None:
-                    [top_rec, top_rec_org, top_rec_details] = funcset.top_recommend()
+                    [top_rec, top_rec_org, top_rec_details] = funcset.top_recommend(stock_dict)
                 if s not in top_rec_details.keys():
                     funcset.output(s + "没有被推荐。")
                     continue

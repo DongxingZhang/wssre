@@ -9,6 +9,7 @@ import tushare as ts
 import const
 import get_report_basic
 import ws_base
+import wssrdb
 
 
 def log(msg):
@@ -191,19 +192,6 @@ def get_history_data_and_quota(stock_num, ktype, func, last_day=datetime.datetim
                 log("获取历史......" + str(i))
     return func([k_index, k_list])
 
-def get_webcache_hash_file_name(cont, datasting):
-    hash_string = str(hex(int(hash(cont)))).replace("0x", "").replace("-", "")
-    i = 1
-    hash_string1 = hash_string
-    while os.path.exists(const.WEBCACHE_CSV.replace("DATEYYMMDDHHMMDD",
-                                                    hash_string1).replace(
-        "DATEYYMMDD", datasting)):
-        hash_string1 = hash_string + "-" + str(i)
-        i += 1
-    return const.WEBCACHE_CSV.replace("DATEYYMMDDHHMMDD",
-                                      hash_string1).replace(
-        "DATEYYMMDD", datasting)
-
 def get_working_days(start, end):
     wd = 0
     while start < end:
@@ -244,42 +232,16 @@ def list_add_uniqe_tuple(list, tuple):
     return list
 
 
-def top_recommend(end_date=datetime.datetime.now().strftime('%Y%m%d'), workingdays=3):
+def top_recommend(stock_dict, end_date=datetime.datetime.now().strftime('%Y%m%d'), workingdays=3):
+    final = []
     current = datetime.datetime.strptime(end_date, '%Y%m%d')
     start_date = current
-    stock_ref = {}
-    rec_details = {}
     while get_working_days(start_date, current) < workingdays:
-        csv_file = const.RECORDS_CSV.replace("DATEYYMMDD", start_date.strftime('%Y-%m-%d'))
-        if os.path.exists(csv_file):
-            log("分析csv文件" + csv_file)
-            ll = read_listlist_csv(csv_file)
-            for l in ll:
-                s = ws_base.STOCK_RECORD(l)
-                if s.get_stocknum() not in stock_ref.keys():
-                    stock_ref[s.get_stocknum()] = ws_base.STOCK_REC(s.get_stocknum(), s.get_stockname())
-                stock_ref[s.get_stocknum()].add_rec(s.get_date(), s.get_organization())
-                if s.get_stocknum() not in rec_details.keys():
-                    rec_details[s.get_stocknum()] = [(s.get_reason().strip(), s.get_reason_file())]
-                else:
-                    rec_details[s.get_stocknum()] = list_add_uniqe_tuple(rec_details[s.get_stocknum()],
-                                                                         (s.get_reason().strip(), s.get_reason_file()))
-            log("分析csv文件" + csv_file + "完毕 (" + str(len(ll)) + "条记录)")
         start_date = start_date + datetime.timedelta(days=-1)
-    final = []
-    rec_org = {}
-    for k, v in stock_ref.items():
-        if v.get_rec_count() > 0:
-            temp = []
-            temp.append(v.get_stocknum())
-            temp.append(v.get_stockname())
-            temp.append(v.get_rec_count())
-            final.append(tuple(temp))
-            rec_org[k] = sorted(v.get_rec(), key=lambda rec: rec[0], reverse=True)
-    final = sorted(final, key=lambda stock_rec: stock_rec[2], reverse=True)
-    top = min([len(final), const.TOP_REC])
-    return [final[0:top], rec_org, rec_details]
-
+    top_list = wssrdb.top_recommend(start_date, end_date, const.TOP_REC)
+    for r in top_list:
+        final.append((r[0], stock_dict[r[0]], r[1]))
+    return final
 
 def show_stock_details(stock_num_list, stock_list):
     sr = []
