@@ -182,7 +182,7 @@ def top_recommend(stock_dict, start_date, end_date, top_count):
     finally:
         cur.close()
         conn.close()
-    return top_list
+    return [top_list, (start_date, end_date)]
 
 
 def top_recommend_stock_org(stockid, org_dict, start_date, end_date):
@@ -204,7 +204,7 @@ def top_recommend_stock_org(stockid, org_dict, start_date, end_date):
     finally:
         cur.close()
         conn.close()
-    return [top_stock_org_list, (start_date, end_date)]
+    return top_stock_org_list
 
 
 def top_recommend_stock_info(stockid, org_dict, start_date, end_date):
