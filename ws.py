@@ -7,6 +7,7 @@ import const
 import funcset
 import get_report
 import get_stock_list
+import wssrdb
 
 if __name__ == '__main__':
     stock_dict = get_stock_list.get_existing_stock_list()
@@ -17,7 +18,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     if args.function is None:
         top_rec = None
-        top_rec_org = None
+        date_range = None
         latest_result = None
         funcset.help()
         while True:
@@ -48,10 +49,10 @@ if __name__ == '__main__':
                     funcset.output("     开始往前给定的工作日时间内推荐次数最多的股票列表")
                     continue
                 elif len(m) == 1:
-                    [top_rec, top_rec_org] = funcset.top_recommend(stock_dict, org_dict)
+                    [top_rec, date_range] = funcset.top_recommend(stock_dict, org_dict)
                     funcset.output("结束日期: " + datetime.datetime.now().strftime('%Y%m%d') + "  工作日: 3")
                 elif len(m) == 3:
-                    [top_rec, top_rec_org] = funcset.top_recommend(stock_dict, org_dict, m[1], int(m[2]))
+                    [top_rec, date_range] = funcset.top_recommend(stock_dict, org_dict, m[1], int(m[2]))
                     funcset.output("结束日期: " + m[1] + "    工作日:" + str(m[2]))
                 funcset.output("")
                 n = 1
@@ -68,16 +69,14 @@ if __name__ == '__main__':
                     funcset.output("rec [股票编号]:获取这个股票的相关推荐信息")
                     continue
                 s = m[1].strip()
-                if top_rec_org is None:
-                    [top_rec, top_rec_org] = funcset.top_recommend(stock_dict, org_dict)
-                if s not in top_rec_org.keys():
-                    funcset.output(s + "没有被推荐.")
-                    continue
+                if top_rec is None:
+                    [top_rec, date_range] = funcset.top_recommend(stock_dict, org_dict)
+                rec_list = wssrdb.top_recommend_stock_org(s, org_dict, date_range[0], date_range[1])
                 funcset.output("股票编号:" + s + "  股票名称:" + stock_dict[s])
                 funcset.output("")
                 funcset.output("%-4s\t%-8s\t%-10s\t" % ("编号", "日期", "机构"))
                 n = 1
-                for v in top_rec_org[s]:
+                for v in rec_list:
                     funcset.output("%-4s\t%-8s\t%-10s\t" % (n, v[0], v[1]))
                     n += 1
                 funcset.output("")
@@ -88,17 +87,16 @@ if __name__ == '__main__':
                     funcset.output("rd  [股票代码，如000001]:获取股票推荐信息和网页。")
                     continue
                 s = m[1].strip()
-                if top_rec_org is None:
-                    [top_rec, top_rec_org, top_rec_details] = funcset.top_recommend(stock_dict, org_dict)
-                if s not in top_rec_details.keys():
-                    funcset.output(s + "没有被推荐。")
-                    continue
+                if top_rec is None:
+                    [top_rec, date_range] = funcset.top_recommend(stock_dict, org_dict)
+                recd_list = wssrdb.top_recommend_stock_info(s, org_dict, date_range[0], date_range[1])
                 funcset.output("股票编号:" + s + "  股票名称:" + stock_dict[s])
                 funcset.output("")
-                for v in top_rec_details[s]:
+                for v in recd_list:
                     funcset.output("-----------------------------------------------------------")
+                    funcset.output("日期:" + str(v[0]) + ",机构:" + str(v[1]))
                     funcset.output(v[0])
-                    funcset.output(v[1])
+                    funcset.output("网址:" + v[1])
                     funcset.output("-----------------------------------------------------------")
                 funcset.output("")
                 funcset.output("===========================================================")

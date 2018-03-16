@@ -237,9 +237,7 @@ def top_recommend(stock_dict, org_dict, end_date=datetime.datetime.now().strftim
     start_date = current
     while get_working_days(start_date, current) < workingdays:
         start_date = start_date + datetime.timedelta(days=-1)
-    top_list = wssrdb.top_recommend(stock_dict, start_date, end_date, const.TOP_REC)
-    top_stock_org_dict = wssrdb.top_recommend_stock_org(org_dict, start_date, end_date)
-    return [top_list, top_stock_org_dict]
+    return wssrdb.top_recommend(stock_dict, start_date, end_date, const.TOP_REC)
 
 
 def show_stock_details(stock_num_list, stock_list):
