@@ -9,17 +9,17 @@ import get_report
 import get_stock_list
 
 if __name__ == '__main__':
-    top_rec = None
-    top_rec_org = None
-    top_rec_details = None
-    latest_result = None
+    stock_dict = get_stock_list.get_existing_stock_list()
+    org_dict = get_stock_list.get_existing_org_list()
+    get_report.get_report(stock_dict, org_dict)
     parser = argparse.ArgumentParser(description='Web Spider Stock Recommendation Tool')
     parser.add_argument('--function', type=str, default=None)
     args = parser.parse_args()
     if args.function is None:
-        stock_dict = get_stock_list.get_existing_stock_list()
-        org_dict = get_stock_list.get_existing_org_list()
-        get_report.get_report(stock_dict, org_dict)
+        top_rec = None
+        top_rec_org = None
+        top_rec_details = None
+        latest_result = None
         funcset.help()
         while True:
             print('>>', end='')
