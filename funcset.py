@@ -12,7 +12,7 @@ import ws_base
 
 
 def log(msg):
-    write_str_to_file(const.LOG_FILE, "WSSR: " + str(msg) + "\n", "a")
+    write_str_to_file(const.LOG_FILE, "WSSR(" + str(datetime.datetime.now()) + "): " + str(msg) + "\n", "a")
 
 
 def output(msg, end='\r'):

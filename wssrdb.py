@@ -18,7 +18,7 @@ def cleanup_stock():
         conn.commit()
     except Exception as e:
         conn.rollback()
-        funcset.output("Execution is failed: " + sql)
+        funcset.log("Execution is failed: " + sql)
         funcset.log(e)
     finally:
         cur.close()
@@ -36,7 +36,7 @@ def insert_stock(stock_dict):
         conn.commit()
     except Exception as e:
         conn.rollback()
-        funcset.output("Execution is failed: " + sql + " with stock_dict")
+        funcset.log("Execution is failed: " + sql + " with stock_dict")
         funcset.log(e)
     finally:
         cur.close()
@@ -57,7 +57,7 @@ def get_stock():
         conn.commit()
     except Exception as e:
         conn.rollback()
-        funcset.output("Execution is failed: " + sql)
+        funcset.log("Execution is failed: " + sql)
         funcset.log(e)
     finally:
         cur.close()
@@ -75,7 +75,7 @@ def insert_org(orgname):
         conn.commit()
     except Exception as e:
         conn.rollback()
-        funcset.output("Execution is failed: " + sql + " with (" + orgname + ")")
+        funcset.log("Execution is failed: " + sql + " with (" + orgname + ")")
         funcset.log(e)
     finally:
         cur.close()
@@ -96,7 +96,7 @@ def get_org():
         conn.commit()
     except Exception as e:
         conn.rollback()
-        funcset.output("Execution is failed: " + sql)
+        funcset.log("Execution is failed: " + sql)
         funcset.log(e)
     finally:
         cur.close()
@@ -117,7 +117,7 @@ def get_orgid(org_name):
         conn.commit()
     except Exception as e:
         conn.rollback()
-        funcset.output("Execution is failed: " + sql)
+        funcset.log("Execution is failed: " + sql)
         funcset.log(e)
     finally:
         cur.close()
@@ -139,7 +139,7 @@ def insert_stock_records(stock_records_list):
             conn.commit()
         except Exception as e:
             conn.rollback()
-            funcset.output("Execution is failed: " + sql)
+            funcset.log("Execution is failed: " + sql)
             funcset.log(e)
         finally:
             cur.close()
@@ -156,7 +156,7 @@ def delete_stock_records(start_date, end_date):
         conn.commit()
     except Exception as e:
         conn.rollback()
-        funcset.output("Execution is failed: " + sql)
+        funcset.log("Execution is failed: " + sql)
         funcset.log(e)
     finally:
         cur.close()
