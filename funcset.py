@@ -207,13 +207,13 @@ def help():
     output("     开始往前给定的工作日时间内推荐次数最多的股票列表")
     output("stock [股票列表]:获取[股票列表]指标信息。")
     output("     [股票列表]: 如0000001,0000002,0000003。")
+    output("trend [股票代码,如000001]: 输出股票的推荐趋势")
     output("rec [股票编号]:获取这个股票的相关推荐信息")
     output("rd  [股票代码，如000001]:获取股票推荐信息和网页。")
     output("kdj/macd  [股票代码,如000001]: 获取MACD/KDJ金叉信息")
     output("show [股票代码,如000001]: 打印来自tushare的k线数据")
     output("save  [文件路径]: 保存最后的结果到csv文件。")
     output("settoprec  [top推荐股票数量]: 设置top推荐股票数量")
-    output("trend [股票代码,如000001]: 输出股票的推荐趋势")
     output("===========================================================")
 
 def list_add_uniqe_tuple(list, tuple):
