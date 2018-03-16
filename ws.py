@@ -39,8 +39,8 @@ if __name__ == '__main__':
             elif m[0] == "getstock" or m[0] == "gs":
                 funcset.output("==================股票列表==================================")
                 funcset.output("股票列表更新中......")
-                get_stock_list.get_stock_list()
-                funcset.output("股票列表更新完成。")
+                sl = get_stock_list.get_stock_list()
+                funcset.output("股票列表更新完成," + str(len(sl)) + "条记录生成。")
                 funcset.output("===========================================================")
             elif m[0] == "top" or m[0] == "t":
                 funcset.output("=====================TOP(" + str(const.TOP_REC) + ")===============================")
