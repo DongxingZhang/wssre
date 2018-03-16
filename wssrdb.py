@@ -191,7 +191,7 @@ def top_recommend_stock_org(org_dict, start_date, end_date):
     cur = conn.cursor()
     sql = ""
     try:
-        sql = "SELECT STOCKID, RECDATE, ORGID FROM (SELECT * FROM STOCK_ORG_RECORDS WHERE RECDATE >= ? AND RECDATE <= ?) GROUP BY STOCKID, RECDATE, ORGID ORDER BY STOCKID, RECDATE"
+        sql = "SELECT STOCKID, RECDATE, ORGID FROM (SELECT * FROM STOCK_ORG_RECORDS WHERE RECDATE >= ? AND RECDATE <= ?) GROUP BY STOCKID, RECDATE, ORGID ORDER BY STOCKID, RECDATE DESC"
         results = cur.execute(sql, (start_date.strftime("%Y-%m-%d"), end_date.strftime("%Y-%m-%d")))
         all = results.fetchall()
         for r in all:
