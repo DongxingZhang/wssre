@@ -164,7 +164,7 @@ def delete_stock_records(start_date, end_date):
 
 
 def top_recommend(start_date, end_date, top_count):
-    top_list = []
+    top_dict = {}
     conn = opendb()
     cur = conn.cursor()
     sql = ""
@@ -173,7 +173,7 @@ def top_recommend(start_date, end_date, top_count):
         results = cur.execute(sql, (start_date.strftime("%Y-%m-%d"), end_date.strftime("%Y-%m-%d"), top_count))
         all = results.fetchall()
         for r in all:
-            top_list.append(r)
+            top_dict[r[0]] = r[1]
         conn.commit()
     except Exception as e:
         conn.rollback()
@@ -182,4 +182,4 @@ def top_recommend(start_date, end_date, top_count):
     finally:
         cur.close()
         conn.close()
-    return top_list
+    return top_dict
