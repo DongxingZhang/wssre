@@ -137,7 +137,7 @@ def generate_report_1(url, get_data_func, encoding, start_date, end_date, stock_
         log("读取URL:" + newurl + " with " + encoding + "(" + str(
             len(get_report)) + ")")
         pageno += 1
-        total_count = len(get_report)
+        total_count += len(get_report)
     return total_count
 
 
