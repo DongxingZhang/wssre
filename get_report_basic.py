@@ -6,7 +6,7 @@ import funcset
 import ws_base
 
 
-def get_data_func(url, html_text, start_date, end_date, stock_list):
+def get_data_func(url, html_text, start_date, end_date, stock_list, org_dict):
     final = {}
     try:
         bs = BeautifulSoup(html_text, "html.parser")
