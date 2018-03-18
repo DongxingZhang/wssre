@@ -103,3 +103,5 @@ ENV/
 
 #ignore
 .idea/
+db/
+timestamp/
