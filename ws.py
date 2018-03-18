@@ -1,7 +1,6 @@
 # coding : UTF-8
 
 import argparse
-import datetime
 
 import const
 import funcset
@@ -52,10 +51,14 @@ if __name__ == '__main__':
                         continue
                     elif len(m) == 1:
                         [top_rec, date_range] = funcset.top_recommend(stock_dict, org_dict)
-                        funcset.output("结束日期: " + datetime.datetime.now().strftime('%Y%m%d') + "  工作日: 3")
+                        funcset.output(
+                            "开始日期: " + date_range[0].strftime('%Y-%m-%d') + "    结束日期: " + date_range[1].strftime(
+                                '%Y-%m-%d') + "    工作日: 3")
                     elif len(m) == 3:
                         [top_rec, date_range] = funcset.top_recommend(stock_dict, org_dict, m[1], int(m[2]))
-                        funcset.output("结束日期: " + m[1] + "    工作日:" + str(m[2]))
+                        funcset.output(
+                            "开始日期: " + date_range[0].strftime('%Y-%m-%d') + "    结束日期: " + date_range[1].strftime(
+                                '%Y-%m-%d') + "    工作日:" + str(m[2]))
                     funcset.output("")
                     n = 1
                     funcset.output("%-4s\t%-8s\t%-10s\t%-4s\t" % ("编号", "股票编号", "股票名称", "次数"))
@@ -150,10 +153,10 @@ if __name__ == '__main__':
                         stock_length = len(date_list)
                         funcset.output("-----------------------------------------------------------")
                         funcset.output(
-                            "%-8s\t%-10s\t%-10s" % ("日期", "KDJ金叉(" + type + ")", "MACD金叉(" + type + ")"))
+                            "%-8s\t%-8s\t%-8s" % ("日期", "KDJ金叉(" + type + ")", "MACD金叉(" + type + ")"))
                         for i in range(stock_length):
                             if kdj_list[i] == "金叉" or macd_list[i] == "金叉":
-                                funcset.output("%-8s\t%-10s\t%-10s" % (date_list[i], kdj_list[i], macd_list[i]))
+                                funcset.output("%-8s\t%-8s\t%-8s" % (date_list[i], kdj_list[i], macd_list[i]))
                         funcset.output("-----------------------------------------------------------")
                     funcset.output("===========================================================")
                 elif m[0] == "show":
@@ -178,7 +181,8 @@ if __name__ == '__main__':
                         const.TOP_REC = int(m[1].strip())
                     print("当前为" + str(const.TOP_REC))
                 elif m[0] == "last":
-                    print(latest_result)
+                    for r in latest_result:
+                        funcset.output(r)
                 elif m[0] == "quit" or m[0] == "q" or m[0] == "exit" or m[0] == "e":
                     break
                 else:
