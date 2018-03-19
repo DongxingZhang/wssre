@@ -4,6 +4,7 @@ import csv
 import datetime
 import os
 
+import pylab as pl
 import tushare as ts
 
 import const
@@ -199,7 +200,7 @@ def help():
     output("     开始往前给定的工作日时间内推荐次数最多的股票列表")
     output("stock [股票列表]:获取[股票列表]指标信息。")
     output("     [股票列表]: 如0000001,0000002,0000003。")
-    output("trend [股票代码,如000001] [结束时期，如20180305] [工作日天数，如3]:")
+    output("trend [股票代码,如000001] [结束时期，如20180305] [工作日天数，如10]:")
     output("     输出股票在一段时间内的推荐趋势")
     output("rec [股票编号]:获取这个股票的相关推荐信息")
     output("rd  [股票代码，如000001]:获取股票推荐信息和网页。")
@@ -225,7 +226,8 @@ def list_add_uniqe_tuple(list, tuple):
     return list
 
 
-def top_recommend(stock_dict, org_dict, end_date=datetime.datetime.now().strftime('%Y%m%d'), workingdays=3):
+def top_recommend(stock_dict, org_dict,
+                  end_date=(datetime.datetime.now() + datetime.timedelta(days=-1)).strftime('%Y%m%d'), workingdays=3):
     end_date = datetime.datetime.strptime(end_date, '%Y%m%d')
     start_date = end_date
     while get_working_days(start_date, end_date) < workingdays:
@@ -278,9 +280,42 @@ def show_tushare(s):
     output(k_index)
 
 
-def show_trend(stock_id, stock_name, end_date=datetime.datetime.now().strftime('%Y%m%d'), working_days=3):
+def show_trend(stock_id, stock_name,
+               end_date=(datetime.datetime.now() + datetime.timedelta(days=-1)).strftime('%Y%m%d'), working_days=10):
     end_date = datetime.datetime.strptime(end_date, '%Y%m%d')
     start_date = end_date
     while get_working_days(start_date, end_date) < working_days:
         start_date = start_date + datetime.timedelta(days=-1)
+    k_dict = {}
+    k_index = ts.get_k_data(stock_id, start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d'))
+    for i in range(0, len(k_index)):
+        k_dict[list(k_index['date'])[i]] = list(k_index['close'])[i]
     trend_dict = wssrdb.get_trend(stock_id, start_date, end_date)
+    date_list = sorted(list(k_dict.keys()) + [item for item in trend_dict.keys() if item not in k_dict.keys()])
+    k_list = []
+    trend_list = []
+    for r in date_list:
+        if r in k_dict.keys():
+            k_list.append(k_dict[r])
+        elif len(k_list) > 0:
+            k_list.append(k_list[-1])
+        else:
+            k_list.append(0.0)
+        if r in trend_dict.keys():
+            trend_list.append(trend_dict[r])
+        else:
+            trend_list.append(0)
+    fig, pl1 = pl.subplots()
+    pl1.plot(date_list, k_list, label=u"收盘价", color="blue", linewidth=2.5)
+    pl1.set_ylabel(u"收盘价", fontsize=18, color="blue")
+    for label in pl1.get_yticklabels():
+        label.set_color("blue")
+    pl2 = pl1.twinx()
+    pl2.plot(date_list, trend_list, label=u"研报推荐", color="red", linewidth=2.5)
+    pl2.set_ylabel(u"研报推荐", fontsize=18, color="red")
+    for label in pl2.get_yticklabels():
+        label.set_color("red")
+    pl2.set_xlabel(u'时间', fontsize=18, color="black")
+    pl1.legend()
+    pl2.legend()
+    pl.show()

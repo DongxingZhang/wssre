@@ -235,7 +235,7 @@ def get_trend(stockid, start_date, end_date):
     cur = conn.cursor()
     sql = ""
     try:
-        sql = "SELECT RECDATE, RECCOUNT FROM STOCK_REC WHERE RECDATE >= ? AND RECDATE <= ? AND STOCKID = '000001' ORDER BY RECDATE"
+        sql = "SELECT RECDATE, RECCOUNT FROM STOCK_REC WHERE RECDATE >= ? AND RECDATE <= ? AND STOCKID = ? ORDER BY RECDATE"
         results = cur.execute(sql, (start_date.strftime("%Y-%m-%d"), end_date.strftime("%Y-%m-%d"), stockid))
         all = results.fetchall()
         for r in all:
