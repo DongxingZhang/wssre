@@ -193,14 +193,14 @@ def get_working_days(start, end):
     return wd
 
 def help():
-    output("===========================================================")
-    output("help :打印帮助")
+    output("=============================================================================================")
+    output("help :打印帮助=")
     output("getstock:获取A股票列表")
-    output("top [结束时期，如20180305] [工作日天数，如3]: 查找从[结束日期]")
-    output("     开始往前给定的工作日时间内推荐次数最多的股票列表")
+    output("top [结束时期，如20180305] [工作日天数，如3]: 查找从[结束日期]开始往前[工作日天数]时间内推荐次数最多")
+    output("    的股票 ")
     output("stock [股票列表]:获取[股票列表]指标信息。")
     output("     [股票列表]: 如0000001,0000002,0000003。")
-    output("trend [股票代码,如000001] [结束时期，如20180305] [工作日天数，如10]:")
+    output("trend [股票代码,如000001] [结束时期，如20180305] [工作日天数，如3] [时间段，月为20，周为5，日为1]:")
     output("     输出股票在一段时间内的推荐趋势")
     output("rec [股票编号]:获取这个股票的相关推荐信息")
     output("rd  [股票代码，如000001]:获取股票推荐信息和网页。")
@@ -208,7 +208,7 @@ def help():
     output("show [股票代码,如000001]: 打印来自tushare的k线数据")
     output("save  [文件路径]: 保存最后的结果到csv文件。")
     output("settoprec  [top推荐股票数量]: 设置top推荐股票数量")
-    output("===========================================================")
+    output("==========================================================================================")
 
 def list_add_uniqe_tuple(list, tuple):
     found = False
@@ -281,11 +281,15 @@ def show_tushare(s):
 
 
 def show_trend(stock_id, stock_name,
-               end_date=(datetime.datetime.now() + datetime.timedelta(days=-1)).strftime('%Y%m%d'), working_days=10):
+               end_date=(datetime.datetime.now() + datetime.timedelta(days=-1)).strftime('%Y%m%d'), working_days=10,
+               step=1):
+    print(working_days)
+    print(step)
     end_date = datetime.datetime.strptime(end_date, '%Y%m%d')
     start_date = end_date
     while get_working_days(start_date, end_date) < working_days:
         start_date = start_date + datetime.timedelta(days=-1)
+    start_date = start_date + datetime.timedelta(days=-(step - 1))
     k_dict = {}
     k_index = ts.get_k_data(stock_id, start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d'))
     for i in range(0, len(k_index)):
@@ -305,6 +309,28 @@ def show_trend(stock_id, stock_name,
             trend_list.append(trend_dict[r])
         else:
             trend_list.append(0)
+    #####################################################
+    if step > 1:  # 大于1天
+        date_list_2 = []
+        k_list_2 = []
+        trend_list_2 = []
+        k_avg = 0.0
+        trend_sum = 0
+        for i in range(0, len(date_list)):
+            if (i + 1) % step > 0:
+                k_avg += k_list[i]
+                trend_sum += trend_list[i]
+            else:
+                date_list_2.append(date_list[i])
+                k_list_2.append(k_avg / step)
+                trend_list_2.append(trend_sum)
+                k_avg = 0.0
+                trend_sum = 0
+        date_list = date_list_2
+        k_list = k_list_2
+        trend_list = trend_list_2
+    #####################################################
+    date_list = [d.replace("-", "\n") for d in date_list]
     fig, pl1 = pl.subplots()
     pl1.plot(date_list, k_list, label=u"收盘价", color="blue", linewidth=2.5)
     pl1.set_ylabel(u"收盘价", fontsize=18, color="blue")
@@ -316,6 +342,6 @@ def show_trend(stock_id, stock_name,
     for label in pl2.get_yticklabels():
         label.set_color("red")
     pl2.set_xlabel(u'时间', fontsize=18, color="black")
-    pl1.legend()
-    pl2.legend()
+    pl.title(stock_name + "[" + stock_id + "]")
+    pl.legend()
     pl.show()
