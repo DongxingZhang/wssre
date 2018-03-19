@@ -227,3 +227,25 @@ def top_recommend_stock_info(stockid, org_dict, start_date, end_date):
         cur.close()
         conn.close()
     return top_stock_org_info_list
+
+
+def get_trend(stockid, start_date, end_date):
+    trend_info = {}
+    conn = opendb()
+    cur = conn.cursor()
+    sql = ""
+    try:
+        sql = "SELECT RECDATE, RECCOUNT FROM STOCK_REC WHERE RECDATE >= ? AND RECDATE <= ? AND STOCKID = '000001' ORDER BY RECDATE"
+        results = cur.execute(sql, (start_date.strftime("%Y-%m-%d"), end_date.strftime("%Y-%m-%d"), stockid))
+        all = results.fetchall()
+        for r in all:
+            trend_info[r[0]] = r[1]
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+        funcset.log("Execution is failed: " + sql)
+        funcset.log(e)
+    finally:
+        cur.close()
+        conn.close()
+    return trend_info

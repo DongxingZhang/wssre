@@ -168,11 +168,14 @@ if __name__ == '__main__':
                     funcset.show_tushare(s)
                     funcset.output("===========================================================")
                 elif m[0] == "trend" or m[0] == "tr":
-                    if len(m) != 2:
-                        funcset.output("trend [股票代码,如000001]: 输出股票的推荐趋势")
+                    if len(m) != 2 and len(m) != 4:
+                        funcset.output("trend [股票代码,如000001] [结束时期，如20180305] [工作日天数，如3]:")
+                        funcset.output("     输出股票在一段时间内的推荐趋势")
                         continue
-                    s = m[1].strip()
-                    funcset.show_trend(s)
+                    if len(m) != 2:
+                        funcset.show_trend(m[1], stock_dict[m[1]])
+                    elif len(m) != 4:
+                        funcset.show_trend(m[1], stock_dict[m[1]], m[2], m[3])
                 elif m[0] == "settoprec":
                     if len(m) != 2 and len(m) != 1:
                         funcset.output("settoprec  [top推荐股票数量]: 设置top推荐股票数量")
