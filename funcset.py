@@ -45,7 +45,6 @@ def read_lastday(csv=const.LAST_DAY_CSV):
     return datetime.datetime.strptime(last_day, "%Y-%m-%d")
 
 
-# stock_data is the dataframe from tushare
 def getStockMacd(stock_data, macd_l=26, macd_s=12, macd_m=9):
     stock_data['ma_s'] = stock_data['close'].ewm(span=macd_s).mean().tolist()
     stock_data['ma_l'] = stock_data['close'].ewm(span=macd_l).mean().tolist()
@@ -53,6 +52,7 @@ def getStockMacd(stock_data, macd_l=26, macd_s=12, macd_m=9):
     stock_data['dea'] = stock_data['diff'].ewm(span=macd_m).mean().tolist()
     stock_data['macd'] = ((stock_data['diff'] - stock_data['dea']) * 2).tolist()
     return stock_data
+
 
 def getStockKDJ(stock_data, n=9, n1=3, n2=3):
     stock_length = len(stock_data)
@@ -111,12 +111,14 @@ def getKDJMacdBrandistock(args):
             kdj_list[i] = "金叉"
     return [date_list, kdj_list, macd_list]
 
+
 def write_listlist_csv(filename, mode, listlist):
     with open(filename, mode, errors='ignore', newline='') as f:
         f_csv = csv.writer(f)
         f_csv.writerows(listlist)
         f.close()
         log(filename + "写入完毕!")
+
 
 def read_listlist_csv(filename):
     listlist = []
@@ -184,6 +186,7 @@ def get_history_data_and_quota(stock_num, ktype, func, last_day=datetime.datetim
                 log("获取历史......" + str(i))
     return func([k_index, k_list])
 
+
 def get_working_days(start, end):
     wd = 0
     while start < end:
@@ -191,6 +194,7 @@ def get_working_days(start, end):
         if start.weekday() not in [5, 6]:
             wd += 1
     return wd
+
 
 def help():
     output("=============================================================================================")
@@ -209,6 +213,7 @@ def help():
     output("save  [文件路径]: 保存最后的结果到csv文件。")
     output("settoprec  [top推荐股票数量]: 设置top推荐股票数量")
     output("==========================================================================================")
+
 
 def list_add_uniqe_tuple(list, tuple):
     found = False
