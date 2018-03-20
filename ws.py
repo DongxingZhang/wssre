@@ -23,8 +23,7 @@ if __name__ == '__main__':
         while True:
             print('>>', end='')
             m = input().strip().lower().split(" ")
-            if True:
-                # try:
+            try:
                 if m[0] == "help" or m[0] == "h":
                     funcset.help()
                 elif m[0] == "savetocsv" or m[0] == "save":
@@ -193,5 +192,5 @@ if __name__ == '__main__':
                     break
                 else:
                     funcset.output("无效命令 " + m[0] + ".")
-            # except Exception as e:
-            #    funcset.output(e)
+            except Exception as e:
+                funcset.output(e)

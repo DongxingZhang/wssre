@@ -281,10 +281,8 @@ def show_tushare(s):
 
 
 def show_trend(stock_id, stock_name,
-               end_date=(datetime.datetime.now() + datetime.timedelta(days=-1)).strftime('%Y%m%d'), working_days=10,
-               step=1):
-    print(working_days)
-    print(step)
+               end_date=(datetime.datetime.now() + datetime.timedelta(days=-1)).strftime('%Y%m%d'), working_days=200,
+               step=10):
     end_date = datetime.datetime.strptime(end_date, '%Y%m%d')
     start_date = end_date
     while get_working_days(start_date, end_date) < working_days:
