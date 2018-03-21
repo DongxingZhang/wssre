@@ -204,7 +204,7 @@ def help():
     output("    的股票 ")
     output("stock [股票列表]:获取[股票列表]指标信息。")
     output("     [股票列表]: 如0000001,0000002,0000003。")
-    output("trend [股票代码,如000001] [结束时期，如20180305] [工作日天数，如3] [时间段，月为20，周为5，日为1]:")
+    output("trend [股票代码,如000001] [结束时期，如20180305] [工作日天数，如5] [时间段，月为20，周为5，日为1]:")
     output("     输出股票在一段时间内的推荐趋势")
     output("rec [股票编号]:获取这个股票的相关推荐信息")
     output("rd  [股票代码，如000001]:获取股票推荐信息和网页。")
@@ -232,7 +232,7 @@ def list_add_uniqe_tuple(list, tuple):
 
 
 def top_recommend(stock_dict, org_dict,
-                  end_date=(datetime.datetime.now() + datetime.timedelta(days=-1)).strftime('%Y%m%d'), workingdays=3):
+                  end_date=(datetime.datetime.now() + datetime.timedelta(days=-1)).strftime('%Y%m%d'), workingdays=5):
     end_date = datetime.datetime.strptime(end_date, '%Y%m%d')
     start_date = end_date
     while get_working_days(start_date, end_date) < workingdays:
