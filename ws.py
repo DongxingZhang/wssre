@@ -53,7 +53,7 @@ if __name__ == '__main__':
                         [top_rec, date_range] = funcset.top_recommend(stock_dict, org_dict)
                         funcset.output(
                             "开始日期: " + date_range[0].strftime('%Y-%m-%d') + "    结束日期: " + date_range[1].strftime(
-                                '%Y-%m-%d') + "    工作日: 3")
+                                '%Y-%m-%d') + "    工作日: 5")
                     elif len(m) == 3:
                         [top_rec, date_range] = funcset.top_recommend(stock_dict, org_dict, m[1], int(m[2]))
                         funcset.output(
